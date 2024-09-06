@@ -1,14 +1,12 @@
+import SideBar from "@/components/SideBar";
 import { ModeToggle } from "@/components/theme";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-       <div>
-        Frontend is cool 😊
+      <div className="flex absolute right-0 top-0 px-5 mt-5">
         <ModeToggle />
-       </div>
+      </div>
     </main>
   );
 }
