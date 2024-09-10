@@ -10,13 +10,15 @@ import {
 
 const router = express.Router();
 
-router.route('/').post(authenticate, authorizeAdmin, createCategory);
-
-router.route('/:categoryId').put(authenticate, authorizeAdmin, updateCategory);
+router
+  .route('/')
+  .post(createCategory)
+  .get(authenticate, authorizeAdmin, listCategory);
 
 router
   .route('/:categoryId')
-  .delete(authenticate, authorizeAdmin, removeCategory);
+  .put(updateCategory)
+  .delete(removeCategory);
 
 router.route('/categories').get(listCategory);
 

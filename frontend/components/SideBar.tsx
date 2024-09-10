@@ -70,9 +70,9 @@ const SideBar = () => {
   return (
     <div
       className={cn(
-        `h-screen bg-gray-800 transition-all duration-300 ${
+        `h-screen bg-gray-800 transition-all duration-300 z-10 ${
           isOpen ? "w-64" : "w-16"
-        } relative`
+        } fixed`
       )}
       onMouseEnter={() => !isPinned && setIsOpen(true)}
       onMouseLeave={() => !isPinned && setIsOpen(false)}

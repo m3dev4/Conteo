@@ -2,14 +2,14 @@ import asyncHandler from '../middleware/asyncHandler.js';
 import Category from '../models/categoryModel.js';
 
 const createCategory = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name } = req.body;
 
-  if (!name || !description) {
-    return res.status(400).json({ message: 'Please enter all fields' });
+  if (!name) {
+    return res.status(400).json({ message: 'Please enter a category name' });
   }
 
   try {
-    const category = new Category({ name, description });
+    const category = new Category({ name });
     await category.save();
     res.status(201).json(category);
   } catch (error) {
@@ -17,11 +17,12 @@ const createCategory = asyncHandler(async (req, res) => {
       return res.status(400).json({ message: 'Category already exists' });
     }
     res.status(500).json({ message: error.message });
+    console.error(error)
   }
 });
 
 const updateCategory = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name } = req.body;
   const { categoryId } = req.params;
 
   try {
@@ -32,7 +33,6 @@ const updateCategory = asyncHandler(async (req, res) => {
     }
 
     category.name = name || category.name;
-    category.description = description || category.description;
 
     const updatedCategory = await category.save();
     res.json(updatedCategory);
