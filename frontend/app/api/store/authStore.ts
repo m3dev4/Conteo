@@ -65,6 +65,7 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       if (!response.ok) {

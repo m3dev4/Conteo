@@ -1,13 +1,14 @@
-import { create } from 'zustand'
+import { create } from 'zustand';
+
 type Story = {
   _id: string;
   title: string;
   description: string;
   content: string;
-  image?: string;
+  image?: string ;
   category: string;
-  author: string;
 };
+
 
 interface StoryState {
   stories: Story[];
@@ -15,12 +16,9 @@ interface StoryState {
   error: string | null;
   fetchStories: () => Promise<void>;
   createStory: (storyData: Omit<Story, "_id">) => Promise<void>;
-  updateStory: (
-    id: string,
-    storyData: Partial<Omit<Story, "_id">>
-  ) => Promise<void>;
+  updateStory: (id: string, storyData: Partial<Omit<Story, "_id">>) => Promise<void>;
   deleteStory: (id: string) => Promise<void>;
-  uploadImage: (file: File) => Promise<void>;
+  uploadImage: (file: File) => Promise<string | void>;
 }
 
 export const useStoryStore = create<StoryState>((set) => ({
@@ -37,33 +35,46 @@ export const useStoryStore = create<StoryState>((set) => ({
       }
       const data = await response.json();
       set({ stories: data, loading: false });
-      console.log(data);
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
   },
-  createStory: async (storyData) => {
+  createStory: async (storyData: Omit<Story, "_id">) => {
     set({ loading: true, error: null });
+    const token = localStorage.getItem('token');
+    console.log("Token from localStorage:", token); // Ajoutez ce log
+
     try {
+      const token = localStorage.getItem('token'); // Assurez-vous que c'est le bon nom de clé
+      console.log("Token from localStorage:", token);
+  
       const response = await fetch("http://localhost:8080/api/stories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(storyData),
+        credentials: 'include',
       });
+  
       if (!response.ok) {
-        throw new Error("Something went wrong");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create story");
       }
+  
       const newStory = await response.json();
       set((state) => ({
         stories: [...state.stories, newStory],
         loading: false,
       }));
     } catch (error: any) {
+      console.error("Error creating story:", error);
       set({ error: error.message, loading: false });
     }
   },
+  
+  
   updateStory: async (id, storyData) => {
     set({ loading: true, error: null });
     try {
@@ -79,9 +90,7 @@ export const useStoryStore = create<StoryState>((set) => ({
       }
       const updatedStory = await response.json();
       set((state) => ({
-        stories: state.stories.map((story) =>
-          story._id === id ? updatedStory : story
-        ),
+        stories: state.stories.map((story) => story._id === id ? updatedStory : story),
         loading: false,
       }));
     } catch (error: any) {
@@ -91,11 +100,11 @@ export const useStoryStore = create<StoryState>((set) => ({
   deleteStory: async (id) => {
     set({ loading: true, error: null });
     try {
-      const reponse = await fetch(`http://localhost:8080/api/stories/${id}`, {
+      const response = await fetch(`http://localhost:8080/api/stories/${id}`, {
         method: "DELETE",
       });
-      if (!reponse.ok) {
-        const errorData = await reponse.json();
+      if (!response.ok) {
+        const errorData = await response.json();
         throw new Error(errorData.message || "Something went wrong");
       }
 
@@ -112,21 +121,22 @@ export const useStoryStore = create<StoryState>((set) => ({
     try {
       const formData = new FormData();
       formData.append("image", file);
-
-      const reponse = await fetch("http://localhost:8080/api/upload", {
+  
+      const response = await fetch("http://localhost:8080/api/upload", {
         method: "POST",
         body: formData,
       });
-      if (!reponse.ok) {
-        const errorData = await reponse.json();
+      if (!response.ok) {
+        const errorData = await response.json();
         throw new Error(errorData.message || "Something went wrong");
       }
-      const result = await reponse.json();
+      const result = await response.json();
       set({ loading: false });
-      return result.image;
-      console.log(result);
+      return result.image; // S'assurer de retourner ici la chaîne de l'URL de l'image
     } catch (error: any) {
       set({ error: error.message, loading: false });
+      return undefined; // Bien retourner undefined ici pour les erreurs
     }
   },
+  
 }));

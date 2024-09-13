@@ -27,7 +27,6 @@ export const useCategoryStore = create<CategoryState>((set) => ({
     try {
       const response = await fetch("http://localhost:8080/api/categories/categories");
       const data = await response.json();
-      console.log("Fetched categories:", data); // Add this line
       set({ categories: data, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
@@ -35,12 +34,14 @@ export const useCategoryStore = create<CategoryState>((set) => ({
   },
 
   createCategory: async (name) => {
+    const token = localStorage.getItem('token');
     set({ loading: true, error: null });
     try {
       const response = await fetch("http://localhost:8080/api/categories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({ name }),
         

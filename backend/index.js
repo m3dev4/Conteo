@@ -5,10 +5,11 @@ import path from 'path';
 
 import userRoutes from './routes/userRoutes.js';
 import categoriesRoutes from './routes/categoryRoutes.js';
-import storiesRoutes from './routes/storyRoute.js';
 import uploadRoute from './routes/uploadRoute.js';
+import storyRoute from './routes/storyRoute.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
 
 const app = express();
 
@@ -24,19 +25,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: 'http://localhost:3000', // Change this as needed
+    origin: 'http://localhost:3000', // Votre frontend URL
+    credentials: true, // Permettre l'envoi de cookies
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes HTTP autorisées
+    allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
   })
 );
 
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoriesRoutes);
-app.use('/api/stories', storiesRoutes);
+app.use('/api/story', storyRoute)
 app.use('/api/upload', uploadRoute);
 
 // Serve static files from the uploads folder
-const __dirname = path.resolve();  // Correction du nom de variable
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
   res.send('Conteo Backend 😊');
