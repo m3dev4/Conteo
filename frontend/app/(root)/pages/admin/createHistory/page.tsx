@@ -10,9 +10,8 @@ import toast, { Toaster } from "react-hot-toast";
 type StoryFormData = {
   title: string;
   description: string;
-  content: string;
   category: string;
-  image: FileList;
+  coverImage: FileList;
 };
 
 const CreateHistory: React.FC = () => {
@@ -20,24 +19,23 @@ const CreateHistory: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<StoryFormData>();
   const fetchStories = useStoryStore((state) => state.fetchStories);
   const createStory = useStoryStore((state) => state.createStory);
-  const uploadImage = useStoryStore((state) => state.uploadImage);
   const loading = useStoryStore((state) => state.loading);
 
   const fetchCategories = useCategoryStore((state) => state.fetchCategories);
   const categories = useCategoryStore((state) => state.categories);
 
-  const navigate = useRouter();
+  const router = useRouter();
+
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStories();
-  }, [fetchStories]);
-
-  useEffect(() => {
     fetchCategories();
-  });
+  }, [fetchStories, fetchCategories]);
 
   useEffect(() => {
     Object.values(errors).forEach((error) => {
@@ -47,108 +45,113 @@ const CreateHistory: React.FC = () => {
     });
   }, [errors]);
 
-  const handleSubmitSorty = async (data: StoryFormData) => {
+  const handleCreateStory = async (data: StoryFormData) => {
     try {
-      let imageUrl: string | null = null;
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('description', data.description);
+      formData.append('category', data.category);
 
-      if (data.image[0]) {
-        imageUrl = await uploadFileHandle(data.image[0]);
+      if (data.coverImage && data.coverImage.length > 0) {
+        formData.append('coverImage', data.coverImage[0]);
       }
 
-      const storyData = {
-        title: data.title,
-        description: data.description,
-        content: data.content,
-        category: data.category,
-      };
-
-      await createStory(storyData); // Assurez-vous que le backend accepte JSON et pas FormData
-        if(!storyData){
-          toast.error("Failed to create story");
-        } else {
-          toast.success("Story created successfully");
-        }
+      await createStory(formData);
+      toast.success("Histoire créée avec succès");
+      console.log("Form data being sent:", Object.fromEntries(formData));
+      reset();
+      setImagePreview(null);
+      router.push('/'); // Rediriger vers la liste des histoires
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create story");
+      toast.error("Échec de la création de l'histoire");
     }
   };
 
-  const uploadFileHandle = async (file: File): Promise<string | null> => {
-    try {
-      const imageUrl = await uploadImage(file); // Appel correct ici
-      if (imageUrl) {
-        toast.success("Image uploaded successfully");
-        return imageUrl; // Utiliser imageUrl ici directement
-      }
-      return null;
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to upload image");
-      return null;
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
     }
   };
 
   return (
-    <div className="container sm:mx-0 bg-gradient-to-tr w-full from-slate-800 to-gray-800 h-screen">
+    <div className=" bg-gradient-to-tr w-full from-slate-800 to-gray-800 min-h-screen p-8 flex justify-between items-center flex-col">
       <Toaster position="top-right" />
-      <div className="flex justify-center items-center flex-col md:w-full p-10 ml-10 ">
-        <h3 className="h-12 font-semibold text-[22px]">Crée un Histoire</h3>
-        <div className="flex flex-col w-full p-11 justify-center items-center gap-6">
-          <form onSubmit={handleSubmit(handleSubmitSorty)}>
-            <div className="one">
-              <label className="font-semibold">Titre</label> <br />
-              <input
-                {...register("title", { required: true })}
-                placeholder="Titre de l'histoire"
-                className="w-full p-2 py-3 border mt-2 border-gray-300 rounded-md bg-slate-800"
-              />
-            </div>
-            <div className="two">
-              <label className="font-semibold">Description</label> <br />
-              <input
-                {...register("description", { required: true })}
-                placeholder="Description de l'histoire"
-                className="w-full p-2 py-3 border mt-2 border-gray-300 rounded-md bg-slate-800"
-              />
-            </div>
-            <div className="three">
-              <label className="font-semibold">Contenu</label> <br />
-              <textarea
-                {...register("content", { required: true })}
-                placeholder="Contenu de l'histoire"
-                className="w-[500px] h-[200px] p-2 py-3 border mt-2 border-gray-300 rounded-md bg-slate-800"
-              />
-            </div>
-            <div className="four">
-              <label className="font-semibold">Catégorie</label> <br />
-              <select
-                {...register("category", { required: true })}
-                className="w-full p-2 py-3 border mt-2 border-gray-300 rounded-md bg-slate-800"
-              >
-                {categories.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="five">
-              <label className="font-semibold">Couverture image</label> <br />
-              <input
-                type="file"
-                {...register("image", { required: true })}
-                className="w-full p-2 py-3 border mt-2 border-gray-300 rounded-md bg-slate-800"
-              />
-            </div>
-            <button
-              type="submit"
-              className="mt-4 bg-blue-500 text-white p-2 rounded"
-            >
-              {loading ? <Loader2Icon className="animate-spin" /> : "Soumettre"}
-            </button>
-          </form>
+      <h1 className="text-3xl font-bold text-white mb-8">Créer une nouvelle histoire</h1>
+      <div className="absolute top-20 py-12 space-y-5 w-[30%] ">
+      <form onSubmit={handleSubmit(handleCreateStory)} className="space-y-6">
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-white">Titre</label>
+          <input
+            type="text"
+            id="title"
+            {...register("title", { required: "Le titre est requis" })}
+            className="bg-stone-950 mt-1 block py-2 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
         </div>
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-white">Description</label>
+          <textarea
+            id="description"
+            {...register("description", { required: "La description est requise" })}
+            className="bg-stone-950 mt-1 block w-full py-9 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            rows={3}
+          ></textarea>
+        </div>
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-white">Catégorie</label>
+          <select
+            id="category"
+            {...register("category", { required: "La catégorie est requise" })}
+            className="bg-stone-950 mt-1 block w-full py-2 px-3 overflow-auto rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <option value="">Sélectionnez une catégorie</option>
+            {categories.map((category) => (
+              <option key={category._id} value={category._id}>{category.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="coverImage" className="block text-sm font-medium text-white">Image de couverture</label>
+          <input
+            type="file"
+            id="coverImage"
+            accept="image/*"
+            {...register("coverImage", { required: "L'image de couverture est requise" })}
+            onChange={handleImageChange}
+            className="mt-1 block w-full py-2 text-sm text-white
+                       file:mr-4 file:py-2 file:px-4
+                       file:rounded-full file:border-0
+                       file:text-sm file:font-semibold
+                       file:bg-violet-50 file:text-violet-700
+                       hover:file:bg-violet-100"
+          />
+          {imagePreview && (
+            <img src={imagePreview} alt="Preview" className="mt-4 max-w-xs rounded-md" />
+          )}
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+        >
+          {loading ? (
+            <>
+              <Loader2Icon className="animate-spin inline mr-2" />
+              Création en cours...
+            </>
+          ) : (
+            "Créer l'histoire"
+          )}
+        </button>
+      </form>
       </div>
     </div>
   );

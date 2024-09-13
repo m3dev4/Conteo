@@ -12,7 +12,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(authenticate, authorizeAdmin, createCategory)
+  .post(createCategory)
   .get(authenticate, authorizeAdmin, listCategory);
 
 router

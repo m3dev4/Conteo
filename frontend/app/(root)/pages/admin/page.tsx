@@ -41,6 +41,9 @@ const IsAdmin = () => {
               <li className="list-none">
                 <Link href="/pages/admin/createHistory">Crée un histoire</Link>
               </li>
+              <li className="list-none">
+                <Link href="/pages/admin/createChapter">Crée un chapitre</Link>
+              </li>
             </ul>
           </div>
         )}

@@ -42,6 +42,7 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ nameOfUser, username, email, password }),
+       credentials: "include",
       });
 
       if (!response.ok) {
@@ -58,6 +59,13 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
 
   login: async (email, password) => {
     set((state) => ({ ...state, loading: true, error: null }));
+  
+    // Assurez-vous que cette ligne est exécutée côté client (navigateur)
+    if (typeof window !== 'undefined') { 
+      const token = localStorage.getItem('token'); // Récupère le token si existant
+      console.log("Token:", token); // Vérifiez dans la console du navigateur
+    }
+  
     try {
       const response = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
@@ -67,18 +75,24 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
         body: JSON.stringify({ email, password }),
         credentials: "include",
       });
-
+  
       if (!response.ok) {
         throw new Error("Échec de la connexion");
       }
-
+  
       const data = await response.json();
+  
+      // Assurez-vous que cette ligne est également exécutée côté client (navigateur)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("user", JSON.stringify(data)); // Sauvegarde les informations de l'utilisateur
+      }
+  
       set((state) => ({ ...state, user: data, loading: false }));
-      localStorage.setItem("user", JSON.stringify(data)); // Sauvegarder dans le stockage local
     } catch (error: any) {
       set((state) => ({ ...state, error: error.message, loading: false }));
     }
   },
+  
 
   logout: async () => {
     set((state) => ({ ...state, loading: true }));

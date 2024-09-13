@@ -69,7 +69,6 @@ const loginUser = asyncHandler(async (req, res) => {
       email: existingUser.email,
       isAdmin: existingUser.isAdmin,
     });
-    localStorage.setItem('token', data.token);
   } else {
     res.status(401); // Mot de passe incorrect
     throw new Error('Mot de passe incorrect.');
