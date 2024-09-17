@@ -29,6 +29,7 @@ app.use(
     credentials: true, // Permettre l'envoi de cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes HTTP autorisées
     allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
+    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
   })
 );
 

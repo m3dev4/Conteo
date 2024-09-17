@@ -4,12 +4,14 @@ type Story = {
   _id: string;
   title: string;
   description: string;
-  Coverimage: string;
+  coverImage: string;
   category: string;
   author: {
     _id: string;
     name: string;
   };
+  createdAt: string;
+  status: string;
 };
 
 interface StoryState {
@@ -20,7 +22,7 @@ interface StoryState {
   createStory: (storyData: FormData) => Promise<void>;
     updateStory: (id: string, storyData: FormData) => Promise<void>;
   deleteStory: (id: string) => Promise<void>;
-  uploadCoverImage: (file: File) => Promise<string | void>;
+  uploadcoverImage: (file: File) => Promise<string | void>;
   getStoryById: (id: string) => Promise<Story | null>;
 }
 
@@ -152,7 +154,7 @@ export const useStoryStore = create<StoryState>((set, get) => ({
     }
   },
 
-  uploadCoverImage: async (file) => {
+  uploadcoverImage: async (file) => {
     set({ loading: true, error: null });
     try {
       const formData = new FormData();
