@@ -26,25 +26,31 @@ export const useChapterStore = create<ChapterState>((set, get) => ({
   getChapterByStoryId: async (storyId: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/stories/${storyId}/chapters`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`http://localhost:8080/api/story/stories/${storyId}/chapters`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      
+      console.log('Response Status:', response.status);
+  
       if (!response.ok) {
-        throw new Error("Failed to fetch chapters");
+        throw new Error(`Failed to fetch chapters: ${response.statusText}`);
       }
+      
+      // Lis la réponse en JSON une seule fois
       const data = await response.json();
+      console.log('Response Body:', data); // Log the parsed JSON data
+      
       set({ chapters: data, loading: false });
     } catch (error: any) {
+      console.error('Error fetching chapters:', error);
       set({ error: error.message, loading: false });
     }
   },
+  
 
   createChapter: async (storyId: string, chapterData: Omit<Chapter, '_id'>) => {
     set({ loading: true, error: null });

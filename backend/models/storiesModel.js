@@ -39,10 +39,16 @@ const StorySchema = new mongoose.Schema({
   },
 });
 
+const PageSchema = new mongoose.Schema({
+  pageNumber: { type: Number, required: true },
+  content: { type: String, required: true },
+});
+
 const ChapterSchema = new mongoose.Schema({
   story: { type: mongoose.Schema.Types.ObjectId, ref: 'Story', required: true },
   chapterNumber: { type: Number, required: true },
   title: { type: String, required: true },
+  pages: [PageSchema],
   content: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

@@ -16,27 +16,30 @@ type Story = {
 
 interface StoryState {
   stories: Story[];
+  readerLater: Story[];
   loading: boolean;
   error: string | null;
   fetchStories: () => Promise<void>;
   createStory: (storyData: FormData) => Promise<void>;
-    updateStory: (id: string, storyData: FormData) => Promise<void>;
+  updateStory: (id: string, storyData: FormData) => Promise<void>;
   deleteStory: (id: string) => Promise<void>;
   uploadcoverImage: (file: File) => Promise<string | void>;
   getStoryById: (id: string) => Promise<Story | null>;
+  addToReaderLater: (story: Story) => void;
 }
 
 const API_URL = "http://localhost:8080/api/story";
 
 export const useStoryStore = create<StoryState>((set, get) => ({
   stories: [],
+  readerLater: [],
   loading: false,
   error: null,
 
   fetchStories: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch('http://localhost:8080/api/story/stories', {
+      const response = await fetch("http://localhost:8080/api/story/stories", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -47,26 +50,31 @@ export const useStoryStore = create<StoryState>((set, get) => ({
         throw new Error("Failed to fetch stories");
       }
       const data = await response.json();
-      set({ stories: data, loading: false });
-      console.log(data);
-      console.log(localStorage.getItem("token"));
-
+      if (Array.isArray(data)) {
+        set({ stories: data, loading: false });
+      } else {
+        throw new Error("Fetched data is not an array");
+      }
+      console.log("Fetched data:", data);
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
   },
 
+  addToReaderLater: (story: Story) => {
+    set((state) => ({
+      readerLater: [...state.readerLater, story]
+    }));
+  },
+
   createStory: async (storyData: FormData) => {
     set({ loading: true, error: null });
     try {
-     
-      
-      const response = await fetch('http://localhost:8080/api/story/stories', {
+      const response = await fetch("http://localhost:8080/api/story/stories", {
         method: "POST",
-     
+
         body: storyData,
         credentials: "include",
-      
       });
       if (!response.ok) {
         throw new Error("Failed to create story");
@@ -159,7 +167,7 @@ export const useStoryStore = create<StoryState>((set, get) => ({
     try {
       const formData = new FormData();
       formData.append("image", file);
-  
+
       const response = await fetch("http://localhost:8080/api/upload", {
         method: "POST",
         body: formData,
@@ -176,6 +184,4 @@ export const useStoryStore = create<StoryState>((set, get) => ({
       return undefined; // Bien retourner undefined ici pour les erreurs
     }
   },
-  
 }));
-

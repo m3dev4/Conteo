@@ -4,6 +4,7 @@ import { create } from "zustand";
 type Category = {
   _id: string;
   name: string;
+  slug: string;
 };
 
 interface CategoryState {
