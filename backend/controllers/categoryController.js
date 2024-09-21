@@ -4,14 +4,17 @@ import Category from '../models/categoryModel.js';
 const createCategory = asyncHandler(async (req, res) => {
   const { name } = req.body;
 
+  const coverImage = req.file.path
+
   if (!name) {
     return res.status(400).json({ message: 'Please enter a category name' });
   }
 
   try {
-    const category = new Category({ name });
+    const category = new Category({ name, coverImage });
     await category.save();
     res.status(201).json(category);
+    console.log(category);
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({ message: 'Category already exists' });

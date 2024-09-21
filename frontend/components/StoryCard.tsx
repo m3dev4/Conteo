@@ -22,12 +22,12 @@ const StoryCard = ({ story }: { story: Story }) => (
         <h3 className="text-lg font-semibold mb-2 line-clamp-2">
           {story.title}
         </h3>
-        <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+        <p className="text-sm text-white mb-4 line-clamp-3">
           {story.description}
         </p>
       </div>
       <div className="mt-auto">
-        <Button variant="outline" className="mt-2 w-full">
+        <Button variant="outline" className="mt-2 w-full bg-orange-600">
           <BookOpen className="mr-2 h-4 w-4" /> Lire
         </Button>
       </div>

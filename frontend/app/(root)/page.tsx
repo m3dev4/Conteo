@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import StoryCard from "@/components/StoryCard";
 import Carousel from "@/components/Caroussel";
+import { ModeToggle } from "@/components/theme";
 
 
 export default function Home() {
@@ -46,10 +47,14 @@ export default function Home() {
     };
     getAllStories();
   }, [fetchStories]);
+ 
+ 
+  
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
+        
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
       </div>
     );
@@ -64,25 +69,25 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gradient-to-b from-blue-50 to-white">
-      <header className="bg-white shadow-md p-6 ">
-        <h1 className="text-3xl font-bold text-gray-800 text-center">
+    <div className="flex flex-col min-h-[150vh] w-full bg-gradient-to-b from-gray-800 to-bg-gray-900">
+      <header className="bg-gray-800 fixed w-full shadow-md p-6 ">
+        
+        <h1 className="text-3xl font-bold text-white text-center">
           Votre Bibliothèque Personnelle
         </h1>
       </header>
-
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow  mx-auto px-4 py-24">
         <Tabs defaultValue="later" className="space-y-8">
-          <TabsList className="mb-4 bg-white p-1 rounded-lg shadow-md">
+          <TabsList className="mb-4 bg-black p-1 rounded-lg shadow-md">
             <TabsTrigger
               value="later"
-              className="data-[state=active]:bg-blue-100"
+              className="data-[state=active]:bg-blue-500 rounded-full"
             >
-              <Clock className="mr-2 h-4 w-4" /> À lire plus tard
+              <Clock className="mr-2 h-4 w-4" /> Votre bibliothèque
             </TabsTrigger>
             <TabsTrigger
               value="new"
-              className="data-[state=active]:bg-blue-100"
+              className="data-[state=active]:bg-blue-500"
             >
               <Sparkles className="mr-2 h-4 w-4" /> Nouveautés
             </TabsTrigger>
@@ -100,7 +105,7 @@ export default function Home() {
                   <StoryCard key={story._id} story={story} />
                 ))
               ) : (
-                <p className="col-span-full text-center text-gray-500 text-lg">
+                <p className="col-span-full text-center text-white text-lg">
                   Vous n'avez pas encore ajouté d'histoire à lire plus tard.
                 </p>
               )}
@@ -119,7 +124,7 @@ export default function Home() {
                   <StoryCard key={story._id} story={story} />
                 ))
               ) : (
-                <p className="col-span-full text-center text-gray-500 text-lg">
+                <p className="col-span-full text-center text-white text-lg">
                   Pas de nouvelles histoires pour le moment.
                 </p>
               )}
@@ -127,8 +132,8 @@ export default function Home() {
           </TabsContent>
         </Tabs>
 
-        <section className="mt-16">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+        <section className="mt-16 translate-y-[200px]">
+          <h2 className="text-2xl font-semibold mb-6 text-white">
             Sélection de la semaine
           </h2>
           <Carousel stories={featuredStories}/>

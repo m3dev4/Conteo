@@ -7,12 +7,13 @@ import {
   removeCategory,
   updateCategory,
 } from '../controllers/categoryController.js';
+import { upload } from "./uploadRoute.js"
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(createCategory)
+  .post( upload.single('coverImage') ,createCategory)
   .get(authenticate, authorizeAdmin, listCategory);
 
 router

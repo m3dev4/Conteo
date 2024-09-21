@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 
 type CategoryFormData = {
   name: string;
+  coverImage: FileList;
 };
 
 const CategoryList: React.FC = () => {
@@ -23,6 +24,8 @@ const CategoryList: React.FC = () => {
 
   const { register, handleSubmit, reset } = useForm<CategoryFormData>();
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -36,18 +39,27 @@ const CategoryList: React.FC = () => {
 
   const onSubmit = async (data: CategoryFormData) => {
     try {
-      if (editingCategory) {
-        await updateCategory(editingCategory, data.name);
-        toast.success("Category updated successfully");
-        setEditingCategory(null);
-      } else {
-        await createCategory(data.name);
-        toast.success("Category created successfully");
-      }
+      const file = data.coverImage && data.coverImage.length > 0 ? data.coverImage[0] : undefined;
+      await createCategory(data.name, file); 
+      toast.success("Category created successfully");
       reset();
       fetchCategories();
     } catch (err) {
       toast.error("An error occurred");
+      console.log(err);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
     }
   };
 
@@ -62,11 +74,11 @@ const CategoryList: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center p-11  w-full h-screen bg-gradient-to-r from-gray-900 to-gray-700">
+    <div className="flex flex-col justify-center items-center p-4 md:p-11 w-full h-screen bg-gradient-to-r from-gray-900 to-gray-700">
       <h2 className="text-white text-lg font-bold mb-4">
         Gestion des catégories
       </h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg">
         <div className="flex flex-col mb-4">
           <label className="text-white mb-2">Nom de la catégorie</label>
           <input
@@ -74,7 +86,15 @@ const CategoryList: React.FC = () => {
             className="w-full p-2 rounded bg-gray-700 text-white"
           />
         </div>
-        <Button type="submit" disabled={loading} className="w-full">
+        <input
+          type="file"
+          id="coverImage"
+          accept="image/*"
+          {...register("coverImage", { required: "L'image de couverture est requise" })}
+          onChange={handleImageChange}
+          className="mt-1 block w-full py-2 text-sm text-white"
+        />
+        <Button type="submit" disabled={loading} className="w-full mt-2">
           {loading ? (
             <LoaderIcon className="animate-spin" />
           ) : editingCategory ? (
@@ -85,11 +105,12 @@ const CategoryList: React.FC = () => {
         </Button>
       </form>
 
-      <ul className="w-full max-w-md mt-8">
+      <div className="">
+      <ul className="w-full  mt-8 grid grid-cols-3 gap-6">
         {categories?.map((category) => (
-          <li key={category._id} className="mb-4 p-4 bg-gray-800 rounded flex justify-between items-center">
+          <li key={category._id} className="mb-4 p-4 bg-gray-800 rounded flex flex-1 justify-center items-center">
             <h4 className="text-white font-bold">{category.name}</h4>
-            <div>
+            <div className="flex flex-col justify-center items-center gap-4 ">
               <Button
                 onClick={() => {
                   setEditingCategory(category._id);
@@ -104,6 +125,7 @@ const CategoryList: React.FC = () => {
                 onClick={() => handleDelete(category._id)}
                 disabled={loading}
                 variant="destructive"
+                className="bg-red-600"
               >
                 Supprimer
               </Button>
@@ -111,6 +133,7 @@ const CategoryList: React.FC = () => {
           </li>
         ))}
       </ul>
+      </div>
     </div>
   );
 };

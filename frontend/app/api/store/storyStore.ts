@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { create } from "zustand";
 
 type Story = {
@@ -32,7 +33,7 @@ const API_URL = "http://localhost:8080/api/story";
 
 export const useStoryStore = create<StoryState>((set, get) => ({
   stories: [],
-  readerLater: [],
+  readerLater: JSON.parse(localStorage.getItem("readerLater") || "[]"),
   loading: false,
   error: null,
 
@@ -62,10 +63,19 @@ export const useStoryStore = create<StoryState>((set, get) => ({
   },
 
   addToReaderLater: (story: Story) => {
-    set((state) => ({
-      readerLater: [...state.readerLater, story]
-    }));
+    set((state) => {
+      const isAlraedyAdded = state.readerLater.some((s) => s._id === story._id)
+      if(isAlraedyAdded) {
+        toast.error("Story already added to reader later")
+        return state;
+      }
+
+      const updatedReaderLater = [...state.readerLater, story];
+      localStorage.setItem("readerLater", JSON.stringify(updatedReaderLater)); // Sauvegarder dans localStorage
+      return { readerLater: updatedReaderLater };
+    });
   },
+
 
   createStory: async (storyData: FormData) => {
     set({ loading: true, error: null });
