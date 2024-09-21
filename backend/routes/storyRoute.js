@@ -4,6 +4,7 @@ import {
   createStory,
   deleteStory,
   getAllStories,
+  getStoryByCategory,
   getStoryById,
   updateStory,
 } from '../controllers/storyController.js';
@@ -20,10 +21,18 @@ import { upload } from './uploadRoute.js';
 const router = express.Router();
 
 router
-  .post('/stories', authenticate, authorizeAdmin, upload.single('coverImage'),  createStory)
-  .get('/stories', getAllStories)
+  .post(
+    '/stories',
+    authenticate,
+    authorizeAdmin,
+    upload.single('coverImage'),
+    createStory
+  )
+  .get('/stories', getAllStories);
 
-router  
+router.get('/category/:slug', authenticate, authorizeAdmin,  getStoryByCategory);
+
+router
   .route('/stories/:id')
   .get(getStoryById)
   .put(updateStory)
@@ -36,9 +45,9 @@ router
     authorizeAdmin,
     createChapter
   )
-  .get( '/stories/:storyId/chapters', getChapterByStory )
-  .get('/chapters/:id',  getChapterById)
-  .put('/chapters/:id',  updateChapter)
-  .delete('/chapters/:id',  deleteChapter);
+  .get('/stories/:storyId/chapters', getChapterByStory)
+  .get('/chapters/:id', getChapterById)
+  .put('/chapters/:id', updateChapter)
+  .delete('/chapters/:id', deleteChapter);
 
 export default router;

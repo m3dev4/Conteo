@@ -26,6 +26,7 @@ interface StoryState {
   deleteStory: (id: string) => Promise<void>;
   uploadcoverImage: (file: File) => Promise<string | void>;
   getStoryById: (id: string) => Promise<Story | null>;
+  fetchStoriesByCategory: (slug: string) => Promise<void>;
   addToReaderLater: (story: Story) => void;
 }
 
@@ -64,9 +65,9 @@ export const useStoryStore = create<StoryState>((set, get) => ({
 
   addToReaderLater: (story: Story) => {
     set((state) => {
-      const isAlraedyAdded = state.readerLater.some((s) => s._id === story._id)
-      if(isAlraedyAdded) {
-        toast.error("Story already added to reader later")
+      const isAlraedyAdded = state.readerLater.some((s) => s._id === story._id);
+      if (isAlraedyAdded) {
+        toast.error("Story already added to reader later");
         return state;
       }
 
@@ -75,7 +76,6 @@ export const useStoryStore = create<StoryState>((set, get) => ({
       return { readerLater: updatedReaderLater };
     });
   },
-
 
   createStory: async (storyData: FormData) => {
     set({ loading: true, error: null });
@@ -166,6 +166,31 @@ export const useStoryStore = create<StoryState>((set, get) => ({
       const storyId = await response.json();
       set({ loading: false });
       return storyId;
+    } catch (error: any) {
+      set({ error: error.message, loading: false });
+      console.log(error.message);
+    }
+  },
+
+  fetchStoriesByCategory: async (slug: string) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch(`${API_URL}/category/${slug}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch stories");
+      }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        set({ stories: data, loading: false });
+      } else {
+        throw new Error("Fetched data is not an array");
+      }
     } catch (error: any) {
       set({ error: error.message, loading: false });
       console.log(error.message);

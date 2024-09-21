@@ -1,6 +1,9 @@
 // Mise à jour de la définition du type Story
 export type Category = {
-  
+  _id: string
+  name: string
+  slug: string
+  coverImage: string
 };
 
 export type Story = {

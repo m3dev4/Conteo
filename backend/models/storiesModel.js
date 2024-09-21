@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
-const ObjectId = new mongoose.Schema;
-
+// Utilisation correcte de mongoose.Schema.Types.ObjectId
 const StorySchema = new mongoose.Schema({
   title: {
     type: String,
@@ -24,7 +23,7 @@ const StorySchema = new mongoose.Schema({
     required: true,
   },
   category: {
-    type: ObjectId,
+    type: mongoose.Schema.Types.ObjectId, // Correction ici
     ref: 'Category',
     required: true,
   },

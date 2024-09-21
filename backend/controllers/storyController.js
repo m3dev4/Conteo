@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 const createStory = asyncHandler(async (req, res) => {
   const { title, description, category } = req.body;
 
-  const coverImage = req.file.path
+  const coverImage = req.file.path;
 
   // Vérifications des champs requis
   if (!title) {
@@ -21,13 +21,15 @@ const createStory = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Veuillez spécifier la catégorie' });
   }
 
-  if(!req.file){
-    return res.status(400).json({ message: 'Veuillez ajouter une image de couverture' });
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ message: 'Veuillez ajouter une image de couverture' });
   }
 
-
   try {
-    const categoryId = new mongoose.Types.ObjectId(category);
+    
+    const categoryId = new mongoose.Types.ObjectId(category)
 
     const story = new Story({
       title,
@@ -38,14 +40,13 @@ const createStory = asyncHandler(async (req, res) => {
     });
 
     await story.save();
+    console.log("Nouvelle histoire créée:", story); // Ajoutez ce log
     res.status(201).json(story);
-    console.log(story);
   } catch (error) {
+    console.error("Erreur lors de la création de l'histoire:", error);
     res.status(400).json({ message: error.message });
-    console.log(error);
   }
 });
-
 
 const getAllStories = asyncHandler(async (req, res) => {
   try {
@@ -68,9 +69,39 @@ const getStoryById = asyncHandler(async (req, res) => {
   }
 });
 
+const getStoryByCategory = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+  console.log("Fetching stories for category slug:", slug);
+
+  try {
+    const category = await Category.findOne({ slug });
+    console.log("Found category:", category);
+
+    if (!category) {
+      console.log("Category not found");
+      return res.status(404).json({ message: 'Catégorie non trouvée' });
+    }
+
+    const stories = await Story.find({ category: category._id })
+      .populate('author', 'name')
+      .populate('category', 'name slug');
+
+      console.log("Category ID used for query:", category._id.toString());
+      console.log("Stories found:", stories.map(s => ({ id: s._id.toString(), title: s.title, categoryId: s.category.toString() })));
+
+    console.log("Found stories:", stories);
+
+
+    res.status(200).json(stories);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des histoires par catégorie:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
 const updateStory = asyncHandler(async (req, res) => {
   const { title, description, category } = req.body;
-  
+
   try {
     // Vérification des champs obligatoires avec retour immédiat après chaque erreur
     // switch (true) {
@@ -102,11 +133,10 @@ const updateStory = asyncHandler(async (req, res) => {
     res.status(200).json(updatedStory); // Retourne l'histoire mise à jour
     console.log(updatedStory); // Affiche l'histoire mise à jour dans la console
   } catch (error) {
-    console.error('Erreur lors de la mise à jour de l\'histoire:', error); // Logging amélioré
+    console.error("Erreur lors de la mise à jour de l'histoire:", error); // Logging amélioré
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
-
 
 const deleteStory = asyncHandler(async (req, res) => {
   try {
@@ -123,10 +153,4 @@ const deleteStory = asyncHandler(async (req, res) => {
   }
 });
 
-export {
-  createStory,
-  getAllStories,
-  getStoryById,
-  updateStory,
-  deleteStory,
-};
+export { createStory, getAllStories, getStoryById, getStoryByCategory , updateStory, deleteStory };
