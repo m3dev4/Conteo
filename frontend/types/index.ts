@@ -19,3 +19,12 @@ export type Story = {
   status: string;
   createdAt: string;
 };
+
+
+export type User = {
+  _id: string;
+  nameOfUser: string;
+  username: string;
+  email: string;
+  isAdmin: boolean;
+};

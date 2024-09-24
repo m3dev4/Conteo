@@ -1,38 +1,66 @@
-import React from "react";
+"use client"
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { BookOpen, X, Plus } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Story } from "@/types";
-import Link from "next/link";
-import { Button } from "./ui/button";
-import Image from "next/image";
-import { getImageUrl } from "@/utils/imageUrl";
-import { BookOpen } from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { getImageUrl } from '@/utils/imageUrl';
 
-const StoryCard = ({ story }: { story: Story }) => (
-  <Card className="w-64 h-96 m-2 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl">
-    {/* <Image src={getImageUrl(story.coverImage)} alt={story.title} width={100} height={100} /> */}
-    <CardContent className="p-4 h-full flex flex-col justify-between">
-      <div>
-        <h3 className="text-lg font-semibold mb-2 line-clamp-2">
-          {story.title}
-        </h3>
-        <p className="text-sm text-white mb-4 line-clamp-3">
-          {story.description}
-        </p>
-      </div>
-      <div className="mt-auto">
-        <Button variant="outline" className="mt-2 w-full bg-orange-600">
-          <BookOpen className="mr-2 h-4 w-4" /> Lire
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
-);
+const StoryCard = ({ story }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <Card 
+        className="w-64 h-96 m-2 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer" 
+        onClick={() => setIsOpen(true)}
+      >
+        <Image src={getImageUrl(story.coverImage)} alt={story.title} width={256} height={384} objectFit="cover" />
+        <CardContent className="p-4 h-1/3 flex flex-col justify-end">
+          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{story.title}</h3>
+        </CardContent>
+      </Card>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-white">
+          <DialogHeader>
+            <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="flex items-start space-x-4">
+              <Image src={getImageUrl(story.coverImage)} alt={story.title} width={150} height={225} objectFit="cover" className="rounded-md" />
+              <div>
+                <DialogTitle className="mb-2">{story.title}</DialogTitle>
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">{story.status}</span>
+                  <span className="text-xs text-muted-foreground">{story.parts} parts</span>
+                </div>
+                <p className="text-sm line-clamp-4">{story.description}</p>
+              </div>
+            </div>
+            <div className="flex space-x-2">
+              <Button className="flex-1">
+                <BookOpen className="mr-2 h-4 w-4" /> Lire maintenant
+              </Button>
+              <Button variant="outline">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
 
 export default StoryCard;

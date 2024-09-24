@@ -9,7 +9,8 @@ import {
   LogOutIcon,
   LayoutDashboardIcon,
   Menu,
-  UserIcon, // Ajout de l'icône utilisateur
+  UserIcon,
+  Book, // Ajout de l'icône utilisateur
 } from "lucide-react";
 import React, { useState } from "react";
 import Image from "next/image";
@@ -35,6 +36,11 @@ const navItems: NavItems[] = [
     label: "History",
     icon: <LibraryBig />,
     href: "/pages/history",
+  },
+  {
+    label: "Bibliothéque",
+    icon: <Book />,
+    href: "/pages/library",
   },
 ];
 

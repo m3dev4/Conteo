@@ -1,29 +1,22 @@
-"use client";
-import React, { useEffect, useState, useRef } from "react";
+"use client"
+import React, { useEffect, useState, useCallback } from "react";
 import { useStoryStore } from "@/app/api/store/storyStore";
 import { Story } from "@/types";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  ChevronLeft,
-  ChevronRight,
-  BookOpen,
-  Clock,
-  Sparkles,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "../api/store/authStore";
+import InfiniteScroll from 'react-infinite-scroll-component';
 import StoryCard from "@/components/StoryCard";
-import Carousel from "@/components/Caroussel";
-import { ModeToggle } from "@/components/theme";
 
+const ITEMS_PER_PAGE = 15; // 5 items per section, 3 sections
 
 export default function Home() {
-  const { fetchStories, stories, readerLater } = useStoryStore();
-  const [featuredStories, setFeaturedStories] = useState<Story[]>([]);
-  const [newReleases, setNewReleases] = useState<Story[]>([]);
+  const { fetchStories, stories } = useStoryStore();
+  const { user } = useAuthStore();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
+
+  const [displayedStories, setDisplayedStories] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const getAllStories = async () => {
@@ -33,8 +26,8 @@ export default function Home() {
         const allStories = useStoryStore.getState().stories;
 
         if (Array.isArray(allStories)) {
-          setFeaturedStories(allStories.slice(0, 10));
-          setNewReleases(allStories.slice(5, 15));
+          setDisplayedStories(allStories.slice(0, ITEMS_PER_PAGE));
+          setHasMore(allStories.length > ITEMS_PER_PAGE);
         } else {
           setError("Les données récupérées ne sont pas valides.");
         }
@@ -47,15 +40,36 @@ export default function Home() {
     };
     getAllStories();
   }, [fetchStories]);
- 
- 
-  
+
+  const fetchMoreData = useCallback(() => {
+    const allStories = useStoryStore.getState().stories;
+    const start = ITEMS_PER_PAGE * page;
+    const end = start + ITEMS_PER_PAGE;
+    const newItems = allStories.slice(start, end);
+
+    if (newItems.length > 0) {
+      setDisplayedStories(prev => [...prev, ...newItems]);
+      setPage(prev => prev + 1);
+    } else {
+      setHasMore(false);
+    }
+  }, [page]);
+
+  const renderSection = (title, stories) => (
+    <div className="mb-10">
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {stories.map((story) => (
+          <StoryCard key={story._id} story={story} />
+        ))}
+      </div>
+    </div>
+  );
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
       </div>
     );
   }
@@ -69,82 +83,26 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-[150vh] w-full bg-gradient-to-b from-gray-800 to-bg-gray-900">
-      <header className="bg-gray-800 fixed w-full shadow-md p-6 ">
-        
-        <h1 className="text-3xl font-bold text-white text-center">
-          Votre Bibliothèque Personnelle
-        </h1>
-      </header>
-      <main className="flex-grow  mx-auto px-4 py-24">
-        <Tabs defaultValue="later" className="space-y-8">
-          <TabsList className="mb-4 bg-black p-1 rounded-lg shadow-md">
-            <TabsTrigger
-              value="later"
-              className="data-[state=active]:bg-blue-500 rounded-full"
-            >
-              <Clock className="mr-2 h-4 w-4" /> Votre bibliothèque
-            </TabsTrigger>
-            <TabsTrigger
-              value="new"
-              className="data-[state=active]:bg-blue-500"
-            >
-              <Sparkles className="mr-2 h-4 w-4" /> Nouveautés
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="later">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-            >
-              {readerLater.length > 0 ? (
-                readerLater.map((story) => (
-                  <StoryCard key={story._id} story={story} />
-                ))
-              ) : (
-                <p className="col-span-full text-center text-white text-lg">
-                  Vous n'avez pas encore ajouté d'histoire à lire plus tard.
-                </p>
-              )}
-            </motion.div>
-          </TabsContent>
-
-          <TabsContent value="new">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-            >
-              {newReleases.length > 0 ? (
-                newReleases.map((story) => (
-                  <StoryCard key={story._id} story={story} />
-                ))
-              ) : (
-                <p className="col-span-full text-center text-white text-lg">
-                  Pas de nouvelles histoires pour le moment.
-                </p>
-              )}
-            </motion.div>
-          </TabsContent>
-        </Tabs>
-
-        <section className="mt-16 translate-y-[200px]">
-          <h2 className="text-2xl font-semibold mb-6 text-white">
-            Sélection de la semaine
-          </h2>
-          <Carousel stories={featuredStories}/>
-        </section>
-      </main>
-
-      <footer className="bg-gray-100 text-center py-4 mt-8">
-        <p className="text-sm text-gray-600">
-          &copy; 2024 Votre Bibliothèque. Tous droits réservés.
-        </p>
-      </footer>
+    <div className="w-full min-h-screen flex justify-between">
+      <div className="w-full h-auto py-7 px-10 flex justify-center items-center flex-col space-y-7">
+        <div className="mt-5">
+          <h3 className="text-5xl font-bold">
+            Hi there👋 <span className="uppercase font-extrabold">
+              {user?.username}
+            </span>
+          </h3>
+        </div>
+        <InfiniteScroll
+          dataLength={displayedStories.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={<h4>Chargement...</h4>}
+        >
+          {renderSection("Conteo Original", displayedStories.slice(0, 5))}
+          {renderSection("Meilleurs choix pour vous", displayedStories.slice(5, 10))}
+          {renderSection("Des histoires suscitant les conversations", displayedStories.slice(10))}
+        </InfiniteScroll>
+      </div>
     </div>
   );
 }
