@@ -1,6 +1,6 @@
 import asyncHandler from '../middleware/asyncHandler.js';
-import User from '../models/UserModel.js';
-import transporter from '../utils/mailer.js'
+import User from '../models/userModel.js'
+
 import bcrypt from 'bcrypt';
 import createToken from '../utils/createToken.js';
 
