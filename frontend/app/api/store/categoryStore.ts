@@ -13,7 +13,7 @@ interface CategoryState {
   loading: boolean;
   error: string | null;
   fetchCategories: () => Promise<void>;
-  createCategory: (name: string) => Promise<void>;
+  createCategory: (name: string, file?: File) => Promise<void>;
   updateCategory: (id: string, name: string) => Promise<void>;
   removeCategory: (id: string) => Promise<void>;
   uploadcoverImage: (file: File) => Promise<string | void>;
