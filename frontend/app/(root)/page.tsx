@@ -6,6 +6,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import StoryCard from "@/components/StoryCard";
 import { motion } from "framer-motion";
 import { useMediaQuery } from 'react-responsive';
+import { Story } from "@/types";
 
 const ITEMS_PER_PAGE = 15; 
 
@@ -15,7 +16,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [displayedStories, setDisplayedStories] = useState([]);
+  const [displayedStories, setDisplayedStories] = useState<Story[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
 
