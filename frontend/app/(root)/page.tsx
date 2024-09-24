@@ -54,10 +54,22 @@ export default function Home() {
     }));
     const start = ITEMS_PER_PAGE * page;
     const end = start + ITEMS_PER_PAGE;
-    const newItems = allStories.slice(start, end);
+    const newItems = allStories.slice(start, end).map(story => ({
+      ...story,
+      author: {
+        _id: story.author._id || "", // S'assurer que c'est un objet Author
+        name: story.author.name || "",
+      },
+      category: {
+        _id: story.category._id || "", // S'assurer que c'est un objet Category
+        name: story.category.name || "",
+        slug: story.category.slug || "",
+      },
+    }));
+    
 
     if (newItems.length > 0) {
-      setDisplayedStories(prev => [...prev, ...newItems]);
+      setDisplayedStories(prev => [...prev, ...newItems as Story[]]);
 
       setPage(prev => prev + 1);
     } else {

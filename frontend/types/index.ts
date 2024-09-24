@@ -13,9 +13,9 @@ export interface Story {
   _id: string;
   title: string;
   description: string;
-  author: Author;
+  author: Author; // Doit être de type Author
   coverImage: string;
-  category: Category; // Modifier ici pour utiliser l'objet Category
+  category: Category; // Doit être de type Category
   status: string;
   createdAt: string;
 }
