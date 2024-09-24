@@ -74,7 +74,7 @@ export default function Home() {
     }
   }, [page]);
 
-  const renderSection = (title, stories) => (
+  const renderSection = (title: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<React.AwaitedReactNode> | null | undefined, stories: any[]) => (
     <div className="mb-10 mt-32 w-full px-4 sm:px-6 md:px-8">
       <h2 className="text-2xl sm:text-3xl font-bold mb-4">{title}</h2>
       <div
@@ -84,7 +84,7 @@ export default function Home() {
             : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
         } gap-4`}
       >
-        {stories.map((story) => (
+        {stories.map((story: Story) => (
           <StoryCard key={story._id} story={story} />
         ))}
       </div>
