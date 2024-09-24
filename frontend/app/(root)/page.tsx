@@ -27,7 +27,7 @@ export default function Home() {
       try {
         setLoading(true);
         await fetchStories();
-        const allStories = useStoryStore.getState().stories as Story[];
+        const allStories = useStoryStore.getState().stories as unknown as Story[];
 
         if (Array.isArray(allStories)) {
           setDisplayedStories(allStories.slice(0, ITEMS_PER_PAGE) as Story[]);

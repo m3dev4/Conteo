@@ -1,24 +1,20 @@
-// Mise à jour de la définition du type Story
-export type Category = {
-  _id: string
-  name: string
-  slug: string
-  coverImage: string
-};
+export interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+}
 
-export type Story = {
+export interface Story {
   _id: string;
   title: string;
   description: string;
+  author: string;
   coverImage: string;
-  category: {
-    _id: string;
-  name: string;
-  slug: string
-  }
+  category: Category; // Modifier ici pour utiliser l'objet Category
   status: string;
   createdAt: string;
-};
+}
+
 
 
 export type User = {
