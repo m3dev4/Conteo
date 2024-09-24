@@ -42,6 +42,8 @@ const navItems: NavItems[] = [
     icon: <Book />,
     href: "/pages/library",
   },
+ 
+  
 ];
 
 const SideBar = () => {
@@ -141,8 +143,8 @@ const SideBar = () => {
                 {isOpen && <span className="ml-2">{user.username}</span>}
               </div>
               {isDropdownOpen && (
-                <div className="absolute flex flex-col bg-gray-700 text-white rounded shadow-lg mt-2">
-                  <Link href="/profile" className="p-2 hover:bg-gray-600">
+                <div className="-mt-28 absolute flex justify-center items-center flex-col bg-gray-700 text-white rounded shadow-lg ">
+                  <Link href="/pages/profile" className="p-2 hover:bg-gray-600">
                     Profile
                   </Link>
                   <button
@@ -184,14 +186,14 @@ const SideBar = () => {
         )}
 
         {/* Icône utilisateur pour mobile */}
-        <div className="relative flex flex-col items-center text-gray-400">
+        <div className="relative flex flex-col justify-center items-center text-gray-400">
           <button onClick={toggleDropdown} className="flex flex-col items-center">
             <UserIcon />
             <span className="text-xs">Profile</span>
           </button>
           {isDropdownOpen && (
-            <div className="absolute bottom-12 left-0 bg-gray-700 text-white rounded shadow-lg w-40">
-              <Link href="/profile" className="block p-2 hover:bg-gray-600">
+            <div className="absolute -mt-24 flex justify-center items-center flex-col  bg-gray-700 text-white rounded shadow-lg w-28">
+              <Link href="/pages/profile" className="block p-2 hover:bg-gray-600">
                 Profile
               </Link>
               <button

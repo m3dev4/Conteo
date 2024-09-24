@@ -2,6 +2,7 @@ import { StateCreator, create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 type User = {
+  registrationDate: string | number | Date;
   _id: string;
   nameOfUser: string;
   username: string;
@@ -23,6 +24,11 @@ interface AuthState {
   logout: () => Promise<void>;
   fetchUserProfile: () => Promise<void>;
   loadUserFromLocalStorage: () => void; // Nouvelle fonction pour charger l'utilisateur depuis le stockage local
+  updateUserProfile: (
+    nameOfUser: string,
+    username: string,
+    email: string
+  ) => Promise<void>;
 }
 
 // Créer une fonction d'état pour Zustand avec le type correct
@@ -128,6 +134,30 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
     const userData = localStorage.getItem("user");
     if (userData) {
       set((state) => ({ ...state, user: JSON.parse(userData) }));
+    }
+  },
+  updateUserProfile: async (nameOfUser, username) => {
+    set((state) => ({ ...state, loading: true, error: null }));
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/users/profile",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nameOfUser, username }),
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Impossible de mettre à jour le profil utilisateur");
+      }
+      const data = await response.json();
+      set((state) => ({ ...state, user: data, loading: false }));
+      localStorage.setItem("user", JSON.stringify(data)); // Sauvegarder dans le stockage local
+    } catch (error: any) {
+      set((state) => ({ ...state, error: error.message, loading: false }));
     }
   },
 });

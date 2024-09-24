@@ -29,8 +29,9 @@ interface StoryState {
   getStoryById: (id: string) => Promise<Story | null>;
   fetchStoriesByCategory: (slug: string) => Promise<void>;
   addToReaderLater: (story: Story) => void;
-  markAsFinished: (story: Story) => void
-  updateProgress: (storyId: string, progress: number) => void
+  removeReaderLater: (story: Story) => void;
+  markAsFinished: (story: Story) => void;
+  updateProgress: (storyId: string, progress: number) => void;
 }
 
 const API_URL = "http://localhost:8080/api/story";
@@ -76,6 +77,21 @@ export const useStoryStore = create<StoryState>((set, get) => ({
       }
 
       const updatedReaderLater = [...state.readerLater, story];
+      localStorage.setItem("readerLater", JSON.stringify(updatedReaderLater)); // Sauvegarder dans localStorage
+      return { readerLater: updatedReaderLater };
+    });
+  },
+  removeReaderLater: (story: Story) => {
+    set((state) => {
+      const isInList = state.readerLater.some((s) => s._id === story._id);
+      if (!isInList) {
+        toast.error("Story not found in reader later list");
+        return state;
+      }
+
+      const updatedReaderLater = state.readerLater.filter(
+        (s) => s._id !== story._id
+      );
       localStorage.setItem("readerLater", JSON.stringify(updatedReaderLater)); // Sauvegarder dans localStorage
       return { readerLater: updatedReaderLater };
     });
@@ -223,14 +239,16 @@ export const useStoryStore = create<StoryState>((set, get) => ({
       return undefined; // Bien retourner undefined ici pour les erreurs
     }
   },
-  markAsFinished: (story) => set((state) => ({
-    finishedStories: [...state.finishedStories, story],
-    stories: state.stories.filter((s) => s._id !== story._id),
-    readerLater: state.readerLater.filter((s) => s._id !== story._id),
-  })),
-  updateProgress: (storyId, progress) => set((state) => ({
-    stories: state.stories.map((story) =>
-      story._id === storyId ? { ...story, progress } : story
-    ),
-  })),
+  markAsFinished: (story) =>
+    set((state) => ({
+      finishedStories: [...state.finishedStories, story],
+      stories: state.stories.filter((s) => s._id !== story._id),
+      readerLater: state.readerLater.filter((s) => s._id !== story._id),
+    })),
+  updateProgress: (storyId, progress) =>
+    set((state) => ({
+      stories: state.stories.map((story) =>
+        story._id === storyId ? { ...story, progress } : story
+      ),
+    })),
 }));

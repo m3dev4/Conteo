@@ -5,28 +5,40 @@ import StoryCard from "@/components/StoryCard";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+
 import { Metadata } from "next";
-
-
-
+import { Trash2Icon } from "lucide-react";
 
 const Library = () => {
-  const { stories, readerLater, finishedStories } = useStoryStore();
+  const { stories, readerLater, finishedStories, removeReaderLater } = useStoryStore();
   const { user } = useAuthStore();
 
-  const renderStories = (storyList, emptyMessage) => {
+  const handleRemove = (story) => {
+    removeReaderLater(story);
+  };
+
+  const renderStories = (storyList, emptyMessage, showTrash = false) => {
     if (!storyList || storyList.length === 0) {
-      return (
-        <p className="col-span-full text-center text-lg">{emptyMessage}</p>
-      );
+      return <p className="col-span-full text-center text-lg">{emptyMessage}</p>;
     }
 
     return storyList.map((story) => (
-      <StoryCard key={story._id} story={story}>
-        {story.progress !== undefined && story.progress < 100 && (
-          <Progress value={story.progress} className="w-full mt-2" />
+      <div key={story._id} className="relative">
+        <StoryCard story={story} showAddReader= {false}>
+          {story.progress !== undefined && story.progress < 100 && (
+            <Progress value={story.progress} className="w-full mt-2" />
+          )}
+        </StoryCard>
+
+        {showTrash && (
+          <button
+            onClick={() => handleRemove(story)}
+            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+          >
+            <Trash2Icon className="h-5 w-5" />
+          </button>
         )}
-      </StoryCard>
+      </div>
     ));
   };
 
@@ -47,7 +59,8 @@ const Library = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {renderStories(
                 readerLater,
-                "Vous n'avez pas encore ajouté d'histoire à lire plus tard."
+                "Vous n'avez pas encore ajouté d'histoire à lire plus tard.",
+                true // Affichez l'icône de poubelle uniquement pour cet onglet
               )}
             </div>
           </TabsContent>

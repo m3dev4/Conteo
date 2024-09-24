@@ -1,9 +1,9 @@
-"use client"
-import React, { useState } from 'react';
-import Image from 'next/image';
+"use client";
+import React, { useState } from "react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, X, Plus } from "lucide-react";
+import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,20 +11,43 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import { getImageUrl } from '@/utils/imageUrl';
+import { getImageUrl } from "@/utils/imageUrl";
+import Link from "next/link";
+import { Toaster } from "react-hot-toast";
+import { Story } from "@/types";
+import { useStoryStore } from "@/app/api/store/storyStore";
 
-const StoryCard = ({ story }) => {
+interface StoryCardProps {
+  story: Story;
+  showAddReader?: boolean; // Ajoutez cette prop pour contrôler si on affiche le bouton "addReader"
+}
+
+const StoryCard = ({ story, showAddReader = true }: StoryCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { addToReaderLater} = useStoryStore()
+
+  const handleAddToReaderLater = (story: Story) => {
+    addToReaderLater(story);
+    
+  };
 
   return (
     <>
-      <Card 
-        className="w-64 h-96 m-2 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer" 
+      <Card
+        className="w-64 h-96 m-2 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer"
         onClick={() => setIsOpen(true)}
       >
-        <Image src={getImageUrl(story.coverImage)} alt={story.title} width={256} height={384} objectFit="cover" />
+        <Image
+          src={getImageUrl(story.coverImage)}
+          alt={story.title}
+          width={256}
+          height={256}
+          objectFit="cover"
+        />
         <CardContent className="p-4 h-1/3 flex flex-col justify-end">
-          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{story.title}</h3>
+          <h3 className="text-lg font-semibold mb-2 line-clamp-2">
+            {story.title}
+          </h3>
         </CardContent>
       </Card>
 
@@ -38,27 +61,41 @@ const StoryCard = ({ story }) => {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="flex items-start space-x-4">
-              <Image src={getImageUrl(story.coverImage)} alt={story.title} width={150} height={225} objectFit="cover" className="rounded-md" />
+              <Image
+                src={getImageUrl(story.coverImage)}
+                alt={story.title}
+                width={150}
+                height={225}
+                objectFit="cover"
+                className="rounded-md"
+              />
               <div>
                 <DialogTitle className="mb-2">{story.title}</DialogTitle>
                 <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">{story.status}</span>
-                  <span className="text-xs text-muted-foreground">{story.parts} parts</span>
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                    {story.status}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {story.parts} parts
+                  </span>
                 </div>
                 <p className="text-sm line-clamp-4">{story.description}</p>
               </div>
             </div>
             <div className="flex space-x-2">
               <Button className="flex-1">
-                <BookOpen className="mr-2 h-4 w-4" /> Lire maintenant
+                <Link href={`/pages/history/${story._id}`}>Lire maintenant</Link>
               </Button>
-              <Button variant="outline">
-                <Plus className="h-4 w-4" />
-              </Button>
+              {showAddReader && ( // Afficher le bouton "Ajouter à lire plus tard" seulement si nécessaire
+                <Button variant="outline" onClick={() => addToReaderLater(story)}>
+                  +
+                </Button>
+              )}
             </div>
           </div>
         </DialogContent>
       </Dialog>
+      <Toaster />
     </>
   );
 };

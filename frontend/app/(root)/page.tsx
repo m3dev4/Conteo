@@ -1,12 +1,13 @@
 "use client"
 import React, { useEffect, useState, useCallback } from "react";
 import { useStoryStore } from "@/app/api/store/storyStore";
-import { Story } from "@/types";
 import { useAuthStore } from "../api/store/authStore";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import StoryCard from "@/components/StoryCard";
+import { motion } from "framer-motion";
+import { useMediaQuery } from 'react-responsive';
 
-const ITEMS_PER_PAGE = 15; // 5 items per section, 3 sections
+const ITEMS_PER_PAGE = 15; 
 
 export default function Home() {
   const { fetchStories, stories } = useStoryStore();
@@ -17,6 +18,8 @@ export default function Home() {
   const [displayedStories, setDisplayedStories] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
   useEffect(() => {
     const getAllStories = async () => {
@@ -56,9 +59,9 @@ export default function Home() {
   }, [page]);
 
   const renderSection = (title, stories) => (
-    <div className="mb-10">
-      <h2 className="text-2xl font-bold mb-4">{title}</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="mb-10 mt-32 w-full px-4 sm:px-6 md:px-8">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-4">{title}</h2>
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5'} gap-4`}>
         {stories.map((story) => (
           <StoryCard key={story._id} story={story} />
         ))}
@@ -84,24 +87,32 @@ export default function Home() {
 
   return (
     <div className="w-full min-h-screen flex justify-between">
-      <div className="w-full h-auto py-7 px-10 flex justify-center items-center flex-col space-y-7">
-        <div className="mt-5">
-          <h3 className="text-5xl font-bold">
+      <div className="w-full h-auto py-7 px-4 sm:px-6 md:flex-wrap md:px-8 flex justify-center items-center flex-col space-y-7">
+        <div className="mt-5 sticky top-0 py-5 bg-white transparent bg-opacity-95 w-full flex justify-center items-center">
+          <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
             Hi there👋 <span className="uppercase font-extrabold">
               {user?.username}
             </span>
           </h3>
         </div>
-        <InfiniteScroll
-          dataLength={displayedStories.length}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={<h4>Chargement...</h4>}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
         >
-          {renderSection("Conteo Original", displayedStories.slice(0, 5))}
-          {renderSection("Meilleurs choix pour vous", displayedStories.slice(5, 10))}
-          {renderSection("Des histoires suscitant les conversations", displayedStories.slice(10))}
-        </InfiniteScroll>
+          <InfiniteScroll
+            dataLength={displayedStories.length}
+            next={fetchMoreData}
+            hasMore={hasMore}
+            loader={<h4 className="text-center">Chargement...</h4>}
+          >
+            {renderSection("Conteo Original", displayedStories.slice(0, 5))}
+            {renderSection("Meilleurs choix pour vous", displayedStories.slice(5, 10))}
+            {renderSection("Des histoires suscitant les conversations", displayedStories.slice(10))}
+          </InfiniteScroll>
+        </motion.div>
       </div>
     </div>
   );
