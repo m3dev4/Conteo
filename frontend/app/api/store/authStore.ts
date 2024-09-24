@@ -42,7 +42,7 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
   signup: async (nameOfUser, username, email, password) => {
     set((state) => ({ ...state, loading: true, error: null }));
     try {
-      const response = await fetch("http://localhost:8080/api/users", {
+      const response = await fetch("https://conteo-1.onrender.com/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
     }
   
     try {
-      const response = await fetch("http://localhost:8080/api/users/login", {
+      const response = await fetch("https://conteo-1.onrender.com/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +103,7 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
   logout: async () => {
     set((state) => ({ ...state, loading: true }));
     try {
-      await fetch("http://localhost:8080/api/users/logout", {
+      await fetch("https://conteo-1.onrender.com/api/users/logout", {
         method: "POST",
       });
       set((state) => ({ ...state, user: null, loading: false }));
@@ -116,7 +116,7 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
   fetchUserProfile: async () => {
     set((state) => ({ ...state, loading: true, error: null }));
     try {
-      const response = await fetch("http://localhost:8080/api/users/profile", {
+      const response = await fetch("https://conteo-1.onrender.com/api/users/profile", {
         credentials: "include", // pour inclure les cookies si nécessaire
       });
       if (!response.ok) {
@@ -140,7 +140,7 @@ const authStore: StateCreator<AuthState, [["zustand/devtools", never]], []> = (
     set((state) => ({ ...state, loading: true, error: null }));
     try {
       const response = await fetch(
-        "http://localhost:8080/api/users/profile",
+        "https://conteo-1.onrender.com/api/users/profile",
         {
           method: "PUT",
           headers: {
