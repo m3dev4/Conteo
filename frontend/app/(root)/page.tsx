@@ -27,10 +27,11 @@ export default function Home() {
       try {
         setLoading(true);
         await fetchStories();
-        const allStories = useStoryStore.getState().stories;
+        const allStories = useStoryStore.getState().stories as Story[];
 
         if (Array.isArray(allStories)) {
-          setDisplayedStories(allStories.slice(0, ITEMS_PER_PAGE));
+          setDisplayedStories(allStories.slice(0, ITEMS_PER_PAGE) as Story[]);
+
           setHasMore(allStories.length > ITEMS_PER_PAGE);
         } else {
           setError("Les données récupérées ne sont pas valides.");
