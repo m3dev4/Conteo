@@ -48,7 +48,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="mb-4">
-        <label className="block mb-2">Nom d'utilisateur</label>
+        <label className="block mb-2">Nom utilisateur</label>
         <input
           type="text"
           value={username}

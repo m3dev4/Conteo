@@ -59,8 +59,8 @@ const Library = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {renderStories(
                 readerLater,
-                "Vous n'avez pas encore ajouté d'histoire à lire plus tard.",
-                true // Affichez l'icône de poubelle uniquement pour cet onglet
+                "Vous avez pas encore ajouté une histoire.",
+                true 
               )}
             </div>
           </TabsContent>
@@ -71,7 +71,7 @@ const Library = () => {
                   (story) =>
                     story.progress !== undefined && story.progress < 100
                 ),
-                "Vous n'avez pas encore commencé à lire d'histoire."
+                "Vous avez pas encore commencé à lire un histoire."
               )}
             </div>
           </TabsContent>
@@ -79,7 +79,7 @@ const Library = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {renderStories(
                 finishedStories,
-                "Vous n'avez pas encore terminé une histoire."
+                "Vous avez pas encore terminé une histoire."
               )}
             </div>
           </TabsContent>
