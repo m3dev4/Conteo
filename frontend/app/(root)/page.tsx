@@ -34,10 +34,10 @@ export default function Home() {
 
           setHasMore(allStories.length > ITEMS_PER_PAGE);
         } else {
-          setError("Les données récupérées ne sont pas valides.");
+          setError(error);
         }
       } catch (error) {
-        setError("Une erreur est survenue lors du chargement des histoires.");
+        setError(error);
         console.error(error);
       } finally {
         setLoading(false);
