@@ -46,13 +46,19 @@ export default function Home() {
   }, [fetchStories]);
 
   const fetchMoreData = useCallback(() => {
-    const allStories = useStoryStore.getState().stories;
+    const allStories = useStoryStore.getState().stories.map(story => ({
+      ...story,
+      author: typeof story.author === 'string' 
+        ? { _id: story.author, name: '' } // Transforme en objet Author avec un `name` vide
+        : story.author
+    }));
     const start = ITEMS_PER_PAGE * page;
     const end = start + ITEMS_PER_PAGE;
     const newItems = allStories.slice(start, end);
 
     if (newItems.length > 0) {
       setDisplayedStories(prev => [...prev, ...newItems]);
+
       setPage(prev => prev + 1);
     } else {
       setHasMore(false);
