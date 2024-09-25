@@ -1,5 +1,5 @@
 export const getImageUrl = (imagePath: string): string => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://conteo-1.onrender.com";
     
     // Vérifier si imagePath est défini
     if (!imagePath) {
