@@ -19,17 +19,18 @@ import { useStoryStore } from "@/app/api/store/storyStore";
 
 interface StoryCardProps {
   story: Story;
+  children?: React.ReactNode
   showAddReader?: boolean; // Ajoutez cette prop pour contrôler si on affiche le bouton "addReader"
 }
 
-const StoryCard = ({ story, showAddReader = true }: StoryCardProps) => {
+const StoryCard = ({ story, children, showAddReader = true }: StoryCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { addToReaderLater} = useStoryStore()
 
-  const handleAddToReaderLater = (story: Story) => {
-    addToReaderLater(story);
+  // const handleAddToReaderLater = (story: Story) => {
+  //   addToReaderLater(story);
     
-  };
+  // };
 
   return (
     <>
@@ -75,9 +76,6 @@ const StoryCard = ({ story, showAddReader = true }: StoryCardProps) => {
                   <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                     {story.status}
                   </span>
-                  <span className="text-xs text-muted-foreground">
-                    {story.parts} parts
-                  </span>
                 </div>
                 <p className="text-sm line-clamp-4">{story.description}</p>
               </div>
@@ -87,7 +85,10 @@ const StoryCard = ({ story, showAddReader = true }: StoryCardProps) => {
                 <Link href={`/pages/history/${story._id}`}>Lire maintenant</Link>
               </Button>
               {showAddReader && ( // Afficher le bouton "Ajouter à lire plus tard" seulement si nécessaire
-                <Button variant="outline" onClick={() => addToReaderLater(story)}>
+                <Button 
+                variant="outline" 
+                // onClick={() => addToReaderLater(story)}
+                >
                   +
                 </Button>
               )}
