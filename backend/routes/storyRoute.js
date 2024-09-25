@@ -41,8 +41,6 @@ router
 router
   .post(
     '/stories/:storyId/chapters',
-    authenticate,
-    authorizeAdmin,
     createChapter
   )
   .get('/stories/:storyId/chapters', getChapterByStory)
