@@ -36,6 +36,13 @@ interface StoryState {
 
 const API_URL = "http://localhost:8080/api/story";
 
+const isClient = () => {
+  if (typeof window !== 'undefined') {
+    return true;
+  }
+  return false;
+};
+
 export const useStoryStore = create<StoryState>((set, get) => ({
   stories: [],
   readerLater: JSON.parse(localStorage.getItem("readerLater") || "[]"),
@@ -69,31 +76,31 @@ export const useStoryStore = create<StoryState>((set, get) => ({
   },
 
   addToReaderLater: (story: Story) => {
+    if (isClient()) {
+      const updatedReaderLater = [...get().readerLater, story];
+      localStorage.setItem("readerLater", JSON.stringify(updatedReaderLater));
+    }
     set((state) => {
       const isAlraedyAdded = state.readerLater.some((s) => s._id === story._id);
       if (isAlraedyAdded) {
         toast.error("Story already added to reader later");
         return state;
       }
-
-      const updatedReaderLater = [...state.readerLater, story];
-      localStorage.setItem("readerLater", JSON.stringify(updatedReaderLater)); // Sauvegarder dans localStorage
-      return { readerLater: updatedReaderLater };
+      return { readerLater: [...state.readerLater, story] };
     });
   },
   removeReaderLater: (story: Story) => {
+    if (isClient()) {
+      const updatedReaderLater = get().readerLater.filter((s) => s._id !== story._id);
+      localStorage.setItem("readerLater", JSON.stringify(updatedReaderLater));
+    }
     set((state) => {
       const isInList = state.readerLater.some((s) => s._id === story._id);
       if (!isInList) {
         toast.error("Story not found in reader later list");
         return state;
       }
-
-      const updatedReaderLater = state.readerLater.filter(
-        (s) => s._id !== story._id
-      );
-      localStorage.setItem("readerLater", JSON.stringify(updatedReaderLater)); // Sauvegarder dans localStorage
-      return { readerLater: updatedReaderLater };
+      return { readerLater: state.readerLater.filter((s) => s._id !== story._id) };
     });
   },
 
