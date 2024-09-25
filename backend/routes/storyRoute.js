@@ -30,7 +30,7 @@ router
   )
   .get('/stories', getAllStories);
 
-router.get('/category/:slug', authenticate, authorizeAdmin,  getStoryByCategory);
+router.get('/category/:slug', getStoryByCategory);
 
 router
   .route('/stories/:id')
