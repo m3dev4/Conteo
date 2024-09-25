@@ -209,10 +209,12 @@ export const useStoryStore = create<StoryState>((set, get) => ({
   fetchStoriesByCategory: async (slug: string) => {
     set({ loading: true, error: null });
     try {
+      const token = localStorage.getItem("token"); // Récupère le token
       const response = await fetch(`${API_URL}/category/${slug}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Ajoute le token ici
         },
         credentials: "include",
       });
