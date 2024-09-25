@@ -1,8 +1,9 @@
+"use client"
 import React, { useState, useEffect } from "react";
 import { useAuthStore } from "@/app/api/store/authStore";
 
 const ProfilePage = () => {
-  const { user, updateProfile, deleteAccount, fetchUserProfile, loading, error } = useAuthStore();
+  const { user, updateUserProfile, deleteAccount, fetchUserProfile, loading, error } = useAuthStore();
   const [nameOfUser, setNameOfUser] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ const ProfilePage = () => {
   }, [user]);
 
   const handleUpdateProfile = async () => {
-    await updateProfile(nameOfUser, username, email);
+    await updateUserProfile(nameOfUser, username, email);
   };
 
   const handleDeleteAccount = async () => {
