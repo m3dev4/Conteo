@@ -31,7 +31,6 @@ export const useChapterStore = create<ChapterState>((set, get) => ({
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
       });
       
       console.log('Response Status:', response.status);
