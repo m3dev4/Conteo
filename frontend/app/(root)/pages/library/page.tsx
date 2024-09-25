@@ -22,7 +22,7 @@ const Library = () => {
     }
 
     return storyList.map((story) => (
-      <StoryCard key={story._id} story={story}>
+      <StoryCard key={story._id} story={story} showAddReader = {false}>
         {story.progress !== undefined && story.progress < 100 && (
           <Progress value={story.progress} className="w-full mt-2" />
         )}
@@ -53,13 +53,13 @@ const Library = () => {
           </TabsContent>
           <TabsContent value="in-progress">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {renderStories(
+              {/* {renderStories(
                 stories?.filter(
                   (story) =>
-                    story.progress !== undefined && story.progress < 100
+                     story.progress !== undefined && story.progress < 100
                 ),
                 "Vous n'avez pas encore commencé à lire d'histoire."
-              )}
+              )} */}
             </div>
           </TabsContent>
           <TabsContent value="finished">

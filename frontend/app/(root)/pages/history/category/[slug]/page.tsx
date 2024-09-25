@@ -1,6 +1,6 @@
 "use client";
 import { useStoryStore } from "@/app/api/store/storyStore";
-import { Story } from "@/types";
+import { Category, Story } from "@/types";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -20,20 +20,21 @@ import { Toaster } from "react-hot-toast";
 
 const CategoryStory = () => {
   const { slug } = useParams();
-  const { stories, loading, error, fetchStoriesByCategory, addToReaderLater } =
-    useStoryStore();
+  const { stories, loading, error, fetchStoriesByCategory, addToReaderLater } = useStoryStore();
   const [selectStorie, setSelectedStory] = useState<Story | null>(null);
 
   useEffect(() => {
     if (slug) {
-      fetchStoriesByCategory(slug);
-      console.log(slug);
+      const slugString = Array.isArray(slug) ? slug.join(',') : slug;
+      fetchStoriesByCategory(slugString);
+      console.log(slugString);
       console.log(stories);
     }
   }, [fetchStoriesByCategory, slug]);
 
   const handleAddToReaderLater = (story: Story) => {
-    addToReaderLater(story);
+    const storyWithCategoryString = { ...story, category: story.category.toString() }
+    addToReaderLater(storyWithCategoryString);
     setSelectedStory(null);
   };
 
@@ -55,7 +56,7 @@ const CategoryStory = () => {
               exit={{ opacity: 0, y: -50 }}
               transition={{ duration: 0.5 }}
               className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
-              onClick={() => setSelectedStory(story)}
+              onClick={() => setSelectedStory(story as Story & { category: string })}
             >
               <div className="relative h-48 sm:h-56">
                 <Image
@@ -76,7 +77,7 @@ const CategoryStory = () => {
                   </p>
                 </div>
                 <div className="flex justify-between items-center">
-                  <Badge>{story.category.slug}</Badge>
+                  <Badge>{(story.category as unknown as Category).slug}</Badge>
                   <span className="text-sm text-gray-500">{story.status}</span>
                 </div>
               </div>

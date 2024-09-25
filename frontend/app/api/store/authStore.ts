@@ -27,6 +27,7 @@ interface AuthState {
   updateUserProfile: (
     nameOfUser: string,
     username: string,
+    email: string
   ) => Promise<void>;
 }
 

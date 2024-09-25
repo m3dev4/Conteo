@@ -1,9 +1,17 @@
 "use client";
 import { useChapterStore } from "@/app/api/store/chapterStore";
 import { useStoryStore } from "@/app/api/store/storyStore";
-import { Story } from "@/types";
+import { Category, Story } from "@/types";
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Menu, AlertCircle, Sun, Moon, Type } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  AlertCircle,
+  Sun,
+  Moon,
+  Type,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -31,7 +39,7 @@ const Reader = ({ params }: { params: { id: string } }) => {
   const [story, setStory] = useState<Story | null>(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [fontSize, setFontSize] = useState(16);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string[] | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [fontFamily, setFontFamily] = useState("serif");
   const [lineHeight, setLineHeight] = useState(1.5);
@@ -43,20 +51,38 @@ const Reader = ({ params }: { params: { id: string } }) => {
       try {
         setFetchError(null);
         const fetchedStory = await getStoryById(params.id);
+        const story: Story = {
+          _id: fetchedStory._id,
+          title: fetchedStory.title,
+          description: fetchedStory.description,
+          author: fetchedStory.author,
+          coverImage: fetchedStory.coverImage,
+          category: {
+            _id: "",
+            name: fetchedStory.category,
+            slug: "",
+          },
+          status: fetchedStory.status,
+          createdAt: fetchedStory.createdAt,
+        };
         if (!fetchedStory) {
           throw new Error("Story not found");
         }
-        setStory(fetchedStory);
+        setStory(story);
         await getChapterByStoryId(fetchedStory._id);
       } catch (err) {
         console.error("Error fetching story or chapters:", err);
-        setFetchError(err instanceof Error ? err.message : "An unknown error occurred");
       }
     };
     fetchStoryAndChapters();
   }, [params.id, getStoryById, getChapterByStoryId]);
 
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
   if (fetchError || error) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -66,15 +92,23 @@ const Reader = ({ params }: { params: { id: string } }) => {
           <AlertDescription>
             {fetchError || error}
             <br />
-            Please try refreshing the page or contact support if the problem persists.
+            Please try refreshing the page or contact support if the problem
+            persists.
           </AlertDescription>
         </Alert>
       </div>
     );
   }
-  if (!story) return <div className="flex justify-center items-center h-screen">Story not found</div>;
+  if (!story)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Story not found
+      </div>
+    );
 
-  const sortedChapters = chapters.sort((a, b) => a.chapterNumber - b.chapterNumber);
+  const sortedChapters = chapters.sort(
+    (a, b) => a.chapterNumber - b.chapterNumber
+  );
   const currentChapter = sortedChapters[currentChapterIndex];
 
   const goToNextChapter = () => {
@@ -94,17 +128,31 @@ const Reader = ({ params }: { params: { id: string } }) => {
   };
 
   return (
-    <div className={`min-h-screen ${theme === "light" ? "bg-gray-100" : "bg-gray-900"}`}>
-      <header className={`${theme === "light" ? "bg-white" : "bg-gray-800"} shadow`}>
+    <div
+      className={`min-h-screen ${
+        theme === "light" ? "bg-gray-100" : "bg-gray-900"
+      }`}
+    >
+      <header
+        className={`${theme === "light" ? "bg-white" : "bg-gray-800"} shadow`}
+      >
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className={`text-2xl sm:text-3xl font-bold ${theme === "light" ? "text-gray-900" : "text-white"}`}>{story.title}</h1>
+          <h1
+            className={`text-2xl sm:text-3xl font-bold ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            {story.title}
+          </h1>
           <div className="flex items-center space-x-4">
             <Button onClick={toggleTheme} variant="outline">
               {theme === "light" ? <Moon /> : <Sun />}
             </Button>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline"><Menu /></Button>
+                <Button variant="outline">
+                  <Menu />
+                </Button>
               </SheetTrigger>
               <SheetContent>
                 <SheetHeader>
@@ -129,9 +177,17 @@ const Reader = ({ params }: { params: { id: string } }) => {
       </header>
 
       <main className="max-w-4xl mx-auto mt-6 px-4 sm:px-6 lg:px-8">
-        <div className={`${theme === "light" ? "bg-white" : "bg-gray-800"} shadow sm:rounded-lg`}>
+        <div
+          className={`${
+            theme === "light" ? "bg-white" : "bg-gray-800"
+          } shadow sm:rounded-lg`}
+        >
           <div className="px-4 py-5 sm:p-6">
-            <h2 className={`text-xl sm:text-2xl font-semibold ${theme === "light" ? "text-gray-900" : "text-white"} mb-4 text-center`}>
+            <h2
+              className={`text-xl sm:text-2xl font-semibold ${
+                theme === "light" ? "text-gray-900" : "text-white"
+              } mb-4 text-center`}
+            >
               Chapter {currentChapter.chapterNumber}: {currentChapter.title}
             </h2>
             <div
@@ -150,7 +206,11 @@ const Reader = ({ params }: { params: { id: string } }) => {
         </div>
 
         <div className="mt-6 flex justify-between items-center flex-wrap">
-          <Button onClick={goToPreviousChapter} disabled={currentChapterIndex === 0} className="mb-2 sm:mb-0">
+          <Button
+            onClick={goToPreviousChapter}
+            disabled={currentChapterIndex === 0}
+            className="mb-2 sm:mb-0"
+          >
             <ChevronLeft className="mr-2" /> Previous Chapter
           </Button>
           <div className="flex items-center space-x-4">
@@ -176,7 +236,10 @@ const Reader = ({ params }: { params: { id: string } }) => {
               />
             </div>
           </div>
-          <Button onClick={goToNextChapter} disabled={currentChapterIndex === sortedChapters.length - 1}>
+          <Button
+            onClick={goToNextChapter}
+            disabled={currentChapterIndex === sortedChapters.length - 1}
+          >
             Next Chapter <ChevronRight className="ml-2" />
           </Button>
         </div>
