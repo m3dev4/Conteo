@@ -24,7 +24,8 @@ const CategoryStory = () => {
 
   const { stories, loading, error, fetchStoriesByCategory, addToReaderLater } =
     useStoryStore();
-  const [selectStorie, setSelectedStory] = useState<Story | null>(null);
+    const [selectStorie, setSelectedStory] = useState<Story | null>(null);
+
 
   useEffect(() => {
     if (normalizedSlug) {
@@ -58,7 +59,7 @@ const CategoryStory = () => {
               exit={{ opacity: 0, y: -50 }}
               transition={{ duration: 0.5 }}
               className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
-              onClick={() => setSelectedStory(story)}
+              // onClick={() => setSelectedStory(story)}
             >
               <div className="relative h-48 sm:h-56">
                 <Image
@@ -79,7 +80,7 @@ const CategoryStory = () => {
                   </p>
                 </div>
                 <div className="flex justify-between items-center">
-                  <Badge>{story.category.slug}</Badge>
+                  {/* <Badge>{story.category.slug}</Badge> */}
                   <span className="text-sm text-gray-500">{story.status}</span>
                 </div>
               </div>
