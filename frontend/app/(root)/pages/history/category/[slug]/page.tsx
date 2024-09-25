@@ -20,24 +20,20 @@ import { Toaster } from "react-hot-toast";
 
 const CategoryStory = () => {
   const { slug } = useParams();
-  const normalizedSlug = Array.isArray(slug) ? slug[0] : slug; // Normaliser le slug en chaîne unique
-
   const { stories, loading, error, fetchStoriesByCategory, addToReaderLater } =
     useStoryStore();
-    const [selectStorie, setSelectedStory] = useState<Story | null>(null);
-
+  const [selectStorie, setSelectedStory] = useState<Story | null>(null);
 
   useEffect(() => {
-    if (normalizedSlug) {
-      fetchStoriesByCategory(normalizedSlug);
-      console.log(normalizedSlug);
+    if (slug) {
+      fetchStoriesByCategory(slug);
+      console.log(slug);
       console.log(stories);
     }
-  }, [fetchStoriesByCategory, normalizedSlug]);
+  }, [fetchStoriesByCategory, slug]);
 
   const handleAddToReaderLater = (story: Story) => {
-    const storyForReaderLater = { ...story, category: story.category.slug }; // Modifier le champ category en string
-    addToReaderLater(storyForReaderLater);
+    addToReaderLater(story);
     setSelectedStory(null);
   };
 
@@ -48,7 +44,7 @@ const CategoryStory = () => {
     <div className="w-full container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-items-center flex-col py-10 mt-10">
         <h3 className="text-2xl sm:text-3xl font-semi-bold mb-4 text-center">
-          Histoire dans la catégorie: {normalizedSlug}
+          Histoire dans la catégorie: {slug}
         </h3>
         <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
           {stories.map((story) => (
@@ -59,7 +55,7 @@ const CategoryStory = () => {
               exit={{ opacity: 0, y: -50 }}
               transition={{ duration: 0.5 }}
               className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
-              // onClick={() => setSelectedStory(story)}
+              onClick={() => setSelectedStory(story)}
             >
               <div className="relative h-48 sm:h-56">
                 <Image
@@ -80,7 +76,7 @@ const CategoryStory = () => {
                   </p>
                 </div>
                 <div className="flex justify-between items-center">
-                  {/* <Badge>{story.category.slug}</Badge> */}
+                  <Badge>{story.category.slug}</Badge>
                   <span className="text-sm text-gray-500">{story.status}</span>
                 </div>
               </div>
@@ -132,4 +128,3 @@ const CategoryStory = () => {
 };
 
 export default CategoryStory;
-

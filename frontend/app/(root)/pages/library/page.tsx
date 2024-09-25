@@ -5,20 +5,16 @@ import StoryCard from "@/components/StoryCard";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-
 import { Metadata } from "next";
-import { Trash2Icon } from "lucide-react";
+
+
+
 
 const Library = () => {
-  const { stories, readerLater, finishedStories, removeReaderLater } =
-    useStoryStore();
+  const { stories, readerLater, finishedStories } = useStoryStore();
   const { user } = useAuthStore();
 
-  const handleRemove = (story) => {
-    removeReaderLater(story);
-  };
-
-  const renderStories = (storyList, emptyMessage, showTrash = false) => {
+  const renderStories = (storyList, emptyMessage) => {
     if (!storyList || storyList.length === 0) {
       return (
         <p className="col-span-full text-center text-lg">{emptyMessage}</p>
@@ -26,22 +22,11 @@ const Library = () => {
     }
 
     return storyList.map((story) => (
-      <div key={story._id} className="relative">
-        <StoryCard key={story._id} story={story} showAddReader={false}>
-          {story.progress !== undefined && story.progress < 100 && (
-            <Progress value={story.progress} className="w-full mt-2" />
-          )}
-        </StoryCard>
-
-        {showTrash && (
-          <button
-            onClick={() => handleRemove(story)}
-            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-          >
-            <Trash2Icon className="h-5 w-5" />
-          </button>
+      <StoryCard key={story._id} story={story}>
+        {story.progress !== undefined && story.progress < 100 && (
+          <Progress value={story.progress} className="w-full mt-2" />
         )}
-      </div>
+      </StoryCard>
     ));
   };
 
@@ -62,27 +47,26 @@ const Library = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {renderStories(
                 readerLater,
-                "Vous avez pas encore ajouté une histoire.",
-                true
+                "Vous n'avez pas encore ajouté d'histoire à lire plus tard."
               )}
             </div>
           </TabsContent>
           <TabsContent value="in-progress">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {/* {renderStories(
+              {renderStories(
                 stories?.filter(
                   (story) =>
                     story.progress !== undefined && story.progress < 100
                 ),
-                "Vous avez pas encore commencé à lire un histoire."
-              )} */}
+                "Vous n'avez pas encore commencé à lire d'histoire."
+              )}
             </div>
           </TabsContent>
           <TabsContent value="finished">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {renderStories(
                 finishedStories,
-                "Vous avez pas encore terminé une histoire."
+                "Vous n'avez pas encore terminé une histoire."
               )}
             </div>
           </TabsContent>

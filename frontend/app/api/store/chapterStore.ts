@@ -26,7 +26,7 @@ export const useChapterStore = create<ChapterState>((set, get) => ({
   getChapterByStoryId: async (storyId: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`https://conteo-1.onrender.com/api/story/stories/${storyId}/chapters`, {
+      const response = await fetch(`http://localhost:8080/api/story/stories/${storyId}/chapters`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export const useChapterStore = create<ChapterState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const response = await fetch(
-        `https://conteo-1.onrender.com/api/story/stories/${storyId}/chapters`,
+        `http://localhost:8080/api/story/stories/${storyId}/chapters`,
         {
           method: "POST",
           headers: {
@@ -83,7 +83,7 @@ export const useChapterStore = create<ChapterState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const response = await fetch(
-        `https://conteo-1.onrender.com/api/chapters/${chapterId}`,
+        `http://localhost:8080/api/chapters/${chapterId}`,
         {
           method: "PUT",
           headers: {
@@ -112,7 +112,7 @@ export const useChapterStore = create<ChapterState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const response = await fetch(
-        `https://conteo-1.onrender.com/api/chapters/${chapterId}`,
+        `http://localhost:8080/api/chapters/${chapterId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -134,7 +134,7 @@ export const useChapterStore = create<ChapterState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const response = await fetch(
-        `https://conteo-1.onrender.com/api/chapters/${chapterId}`,
+        `http://localhost:8080/api/chapters/${chapterId}`,
         {
           method: "GET",
           headers: {

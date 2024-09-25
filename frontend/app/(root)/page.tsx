@@ -1,14 +1,13 @@
-"use client";
+"use client"
 import React, { useEffect, useState, useCallback } from "react";
 import { useStoryStore } from "@/app/api/store/storyStore";
 import { useAuthStore } from "../api/store/authStore";
-import InfiniteScroll from "react-infinite-scroll-component";
+import InfiniteScroll from 'react-infinite-scroll-component';
 import StoryCard from "@/components/StoryCard";
 import { motion } from "framer-motion";
-import { useMediaQuery } from "react-responsive";
-import { Story } from "@/types";
+import { useMediaQuery } from 'react-responsive';
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 15; 
 
 export default function Home() {
   const { fetchStories, stories } = useStoryStore();
@@ -16,7 +15,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [displayedStories, setDisplayedStories] = useState<Story[]>([]);
+  const [displayedStories, setDisplayedStories] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
 
@@ -27,17 +26,16 @@ export default function Home() {
       try {
         setLoading(true);
         await fetchStories();
-        const allStories = useStoryStore.getState()
-          .stories as unknown as Story[];
+        const allStories = useStoryStore.getState().stories;
 
         if (Array.isArray(allStories)) {
-          setDisplayedStories(allStories.slice(0, ITEMS_PER_PAGE) as Story[]);
-
+          setDisplayedStories(allStories.slice(0, ITEMS_PER_PAGE));
           setHasMore(allStories.length > ITEMS_PER_PAGE);
         } else {
-          setError(error);
+          setError("Les données récupérées ne sont pas valides.");
         }
       } catch (error) {
+        setError("Une erreur est survenue lors du chargement des histoires.");
         console.error(error);
       } finally {
         setLoading(false);
@@ -47,44 +45,24 @@ export default function Home() {
   }, [fetchStories]);
 
   const fetchMoreData = useCallback(() => {
-    const allStories = useStoryStore.getState().stories.map((story) => ({
-      ...story,
-      author:
-        typeof story.author === "string"
-          ? { _id: story.author, name: "" } // Transforme en objet Author avec un `name` vide
-          : story.author,
-    }));
+    const allStories = useStoryStore.getState().stories;
     const start = ITEMS_PER_PAGE * page;
     const end = start + ITEMS_PER_PAGE;
-    const newItems = allStories.slice(start, end).map((story) => ({
-      ...story,
-      author: {
-        _id: story.author._id || "", // S'assurer que c'est un objet Author
-        name: story.author.name || "",
-      },
-     
-    }));
+    const newItems = allStories.slice(start, end);
 
     if (newItems.length > 0) {
-      setDisplayedStories((prev) => [...prev, ...(newItems as unknown as Story[])]);
-
-      setPage((prev) => prev + 1);
+      setDisplayedStories(prev => [...prev, ...newItems]);
+      setPage(prev => prev + 1);
     } else {
       setHasMore(false);
     }
   }, [page]);
 
-  const renderSection = (title: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<React.AwaitedReactNode> | null | undefined, stories: any[]) => (
+  const renderSection = (title, stories) => (
     <div className="mb-10 mt-32 w-full px-4 sm:px-6 md:px-8">
       <h2 className="text-2xl sm:text-3xl font-bold mb-4">{title}</h2>
-      <div
-        className={`grid ${
-          isMobile
-            ? "grid-cols-1"
-            : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
-        } gap-4`}
-      >
-        {stories.map((story: Story) => (
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5'} gap-4`}>
+        {stories.map((story) => (
           <StoryCard key={story._id} story={story} />
         ))}
       </div>
@@ -109,11 +87,12 @@ export default function Home() {
 
   return (
     <div className="w-full min-h-screen flex justify-between">
-      <div className="w-full h-auto py-7 px-4 sm:px-6 md:flex-wrap md:px-8 flex justify-center items-center flex-col space-y-7">
+      <div className="w-full h-auto py-7 px-4 sm:px-6 flex justify-center items-center flex-col space-y-7">
         <div className="mt-5 sticky top-0 py-5 bg-white transparent bg-opacity-95 w-full flex justify-center items-center">
           <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
-            Hi there👋{" "}
-            <span className="uppercase font-extrabold">{user?.username}</span>
+            Hi there👋 <span className="uppercase font-extrabold">
+              {user?.username}
+            </span>
           </h3>
         </div>
         <motion.div
@@ -130,14 +109,8 @@ export default function Home() {
             loader={<h4 className="text-center">Chargement...</h4>}
           >
             {renderSection("Conteo Original", displayedStories.slice(0, 5))}
-            {renderSection(
-              "Meilleurs choix pour vous",
-              displayedStories.slice(5, 10)
-            )}
-            {renderSection(
-              "Des histoires suscitant les conversations",
-              displayedStories.slice(10)
-            )}
+            {renderSection("Meilleurs choix pour vous", displayedStories.slice(5, 10))}
+            {renderSection("Des histoires suscitant les conversations", displayedStories.slice(10))}
           </InfiniteScroll>
         </motion.div>
       </div>

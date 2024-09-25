@@ -46,18 +46,8 @@ const Reader = ({ params }: { params: { id: string } }) => {
         if (!fetchedStory) {
           throw new Error("Story not found");
         }
-        // Convertir les types de catégorie et auteur si nécessaire
-        const adaptedStory: Story = {
-          ...fetchedStory,
-          category: typeof fetchedStory.category === 'string' 
-            ? { _id: fetchedStory.category, name: '', slug: '' } 
-            : fetchedStory.category,
-          author: typeof fetchedStory.author === 'string' 
-            ? { _id: fetchedStory.author, name: '' }
-            : fetchedStory.author,
-        };
-        setStory(adaptedStory);
-        await getChapterByStoryId(adaptedStory._id);
+        setStory(fetchedStory);
+        await getChapterByStoryId(fetchedStory._id);
       } catch (err) {
         console.error("Error fetching story or chapters:", err);
         setFetchError(err instanceof Error ? err.message : "An unknown error occurred");

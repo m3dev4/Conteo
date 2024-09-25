@@ -13,7 +13,7 @@ interface CategoryState {
   loading: boolean;
   error: string | null;
   fetchCategories: () => Promise<void>;
-  createCategory: (name: string, file?: File) => Promise<void>;
+  createCategory: (name: string) => Promise<void>;
   updateCategory: (id: string, name: string) => Promise<void>;
   removeCategory: (id: string) => Promise<void>;
   uploadcoverImage: (file: File) => Promise<string | void>;
@@ -29,7 +29,7 @@ export const useCategoryStore = create<CategoryState>((set) => ({
     set({ loading: true, error: null });
     try {
       const response = await fetch(
-        "https://conteo-1.onrender.com/api/categories/categories"
+        "http://localhost:8080/api/categories/categories"
       );
       const data = await response.json();
       set({ categories: data, loading: false });
@@ -51,7 +51,7 @@ export const useCategoryStore = create<CategoryState>((set) => ({
         formData.append("coverImage", file); // Ajouter l'image dans FormData
       }
   
-      const response = await fetch("https://conteo-1.onrender.com/api/categories", {
+      const response = await fetch("http://localhost:8080/api/categories", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`, // Ajout de l'autorisation si nécessaire
@@ -78,7 +78,7 @@ export const useCategoryStore = create<CategoryState>((set) => ({
     set({ loading: true, error: null });
     try {
       const response = await fetch(
-        `https://conteo-1.onrender.com/api/categories/${id}`,
+        `http://localhost:8080/api/categories/${id}`,
         {
           method: "PUT",
           headers: {
@@ -103,7 +103,7 @@ export const useCategoryStore = create<CategoryState>((set) => ({
     set({ loading: true, error: null });
     try {
       const response = await fetch(
-        `https://conteo-1.onrender.com/api/categories/${id}`,
+        `http://localhost:8080/api/categories/${id}`,
         {
           method: "DELETE",
         }
@@ -129,7 +129,7 @@ export const useCategoryStore = create<CategoryState>((set) => ({
       const formData = new FormData();
       formData.append("image", file);
 
-      const response = await fetch("https://conteo-1.onrender.com/api/upload", {
+      const response = await fetch("http://localhost:8080/api/upload", {
         method: "POST",
         body: formData,
       });

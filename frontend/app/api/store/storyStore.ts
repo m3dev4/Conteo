@@ -34,7 +34,7 @@ interface StoryState {
   updateProgress: (storyId: string, progress: number) => void;
 }
 
-const API_URL = "https://conteo-1.onrender.com/api/story";
+const API_URL = "http://localhost:8080/api/story";
 
 export const useStoryStore = create<StoryState>((set, get) => ({
   stories: [],
@@ -46,7 +46,7 @@ export const useStoryStore = create<StoryState>((set, get) => ({
   fetchStories: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch("https://conteo-1.onrender.com/api/story/stories", {
+      const response = await fetch("http://localhost:8080/api/story/stories", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +100,7 @@ export const useStoryStore = create<StoryState>((set, get) => ({
   createStory: async (storyData: FormData) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch("https://conteo-1.onrender.com/api/story/stories", {
+      const response = await fetch("http://localhost:8080/api/story/stories", {
         method: "POST",
 
         body: storyData,
@@ -223,7 +223,7 @@ export const useStoryStore = create<StoryState>((set, get) => ({
       const formData = new FormData();
       formData.append("image", file);
 
-      const response = await fetch("https://conteo-1.onrender.com/api/upload", {
+      const response = await fetch("http://localhost:8080/api/upload", {
         method: "POST",
         body: formData,
       });
