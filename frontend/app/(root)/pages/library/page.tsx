@@ -10,7 +10,8 @@ import { Metadata } from "next";
 import { Trash2Icon } from "lucide-react";
 
 const Library = () => {
-  const { stories, readerLater, finishedStories, removeReaderLater } = useStoryStore();
+  const { stories, readerLater, finishedStories, removeReaderLater } =
+    useStoryStore();
   const { user } = useAuthStore();
 
   const handleRemove = (story) => {
@@ -19,12 +20,14 @@ const Library = () => {
 
   const renderStories = (storyList, emptyMessage, showTrash = false) => {
     if (!storyList || storyList.length === 0) {
-      return <p className="col-span-full text-center text-lg">{emptyMessage}</p>;
+      return (
+        <p className="col-span-full text-center text-lg">{emptyMessage}</p>
+      );
     }
 
     return storyList.map((story) => (
       <div key={story._id} className="relative">
-        <StoryCard key={story._id} story={story} showAddReader= {false}>
+        <StoryCard key={story._id} story={story} showAddReader={false}>
           {story.progress !== undefined && story.progress < 100 && (
             <Progress value={story.progress} className="w-full mt-2" />
           )}
@@ -60,7 +63,7 @@ const Library = () => {
               {renderStories(
                 readerLater,
                 "Vous avez pas encore ajouté une histoire.",
-                true 
+                true
               )}
             </div>
           </TabsContent>
