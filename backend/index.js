@@ -25,13 +25,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: 'https://conteo.vercel.app/', // Votre frontend URL
-    credentials: true, // Permettre l'envoi de cookies
+    origin: [
+      'https://conteo.vercel.app', 
+      'https://conteo-qea1d1loe-devlo4s-projects.vercel.app' // Ajoute ici l'URL actuelle de ton frontend
+    ],
+    credentials: true, // Permet l'envoi de cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes HTTP autorisées
     allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
     exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
   })
-);
+)
 
 // Routes
 app.use('/api/users', userRoutes);
