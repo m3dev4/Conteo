@@ -20,17 +20,19 @@ import { Toaster } from "react-hot-toast";
 
 const CategoryStory = () => {
   const { slug } = useParams();
+  const normalizedSlug = Array.isArray(slug) ? slug[0] : slug; // Normaliser le slug en chaîne unique
+
   const { stories, loading, error, fetchStoriesByCategory, addToReaderLater } =
     useStoryStore();
   const [selectStorie, setSelectedStory] = useState<Story | null>(null);
 
   useEffect(() => {
-    if (slug) {
-      fetchStoriesByCategory(slug);
-      console.log(slug);
+    if (normalizedSlug) {
+      fetchStoriesByCategory(normalizedSlug);
+      console.log(normalizedSlug);
       console.log(stories);
     }
-  }, [fetchStoriesByCategory, slug]);
+  }, [fetchStoriesByCategory, normalizedSlug]);
 
   const handleAddToReaderLater = (story: Story) => {
     addToReaderLater(story);
@@ -44,7 +46,7 @@ const CategoryStory = () => {
     <div className="w-full container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-items-center flex-col py-10 mt-10">
         <h3 className="text-2xl sm:text-3xl font-semi-bold mb-4 text-center">
-          Histoire dans la catégorie: {slug}
+          Histoire dans la catégorie: {normalizedSlug}
         </h3>
         <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
           {stories.map((story) => (
@@ -128,3 +130,4 @@ const CategoryStory = () => {
 };
 
 export default CategoryStory;
+
