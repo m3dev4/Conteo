@@ -45,7 +45,7 @@ const isClient = () => {
 
 export const useStoryStore = create<StoryState>((set, get) => ({
   stories: [],
-  readerLater: JSON.parse(localStorage.getItem("readerLater") || "[]"),
+  readerLater: [],
   finishedStories: [],
   loading: false,
   error: null,
@@ -72,6 +72,13 @@ export const useStoryStore = create<StoryState>((set, get) => ({
       console.log("Fetched data:", data);
     } catch (error: any) {
       set({ error: error.message, loading: false });
+    }
+  },
+
+  initializeReaderLater: () => {
+    if (isClient()) {
+      const storedReaderLater = JSON.parse(localStorage.getItem("readerLater") || "[]");
+      set({ readerLater: storedReaderLater });
     }
   },
 
