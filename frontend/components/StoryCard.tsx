@@ -31,9 +31,9 @@ const StoryCard = ({ story, children, showAddReader = true }: StoryCardProps) =>
   const [isOpen, setIsOpen] = useState(false);
   const { addToReaderLater} = useStoryStore()
 
-  const handleAddToReaderLater = (story: Story) => {
-    addToReaderLater(story as StoryWithCategory);
-  };
+  // const handleAddToReaderLater = (story: Story) => {
+  //   addToReaderLater(story as StoryWithCategory);
+  // };
 
   return (
     <>
@@ -91,7 +91,9 @@ const StoryCard = ({ story, children, showAddReader = true }: StoryCardProps) =>
                 <Link href={`/pages/history/${story._id}`}>Lire maintenant</Link>
               </Button>
               {showAddReader && ( // Afficher le bouton "Ajouter à lire plus tard" seulement si nécessaire
-                <Button variant="outline" onClick={() => handleAddToReaderLater(story)}>
+                <Button variant="outline" 
+                // onClick={() => handleAddToReaderLater(story)}
+                >
                   +
                 </Button>
               )}
