@@ -35,7 +35,8 @@ const CategoryStory = () => {
   }, [fetchStoriesByCategory, normalizedSlug]);
 
   const handleAddToReaderLater = (story: Story) => {
-    addToReaderLater(story);
+    const storyForReaderLater = { ...story, category: story.category.slug }; // Modifier le champ category en string
+    addToReaderLater(storyForReaderLater);
     setSelectedStory(null);
   };
 
