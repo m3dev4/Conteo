@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["localhost"], // Ajoutez ici le domaine de votre serveur backend
+    domains: ["conteo-1.onrender.com"], // Ajoutez ici le domaine de votre serveur backend
   },
 };
 

@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: 'http://localhost:3000', // Votre frontend URL
+    origin: 'https://conteo.vercel.app/', // Votre frontend URL
     credentials: true, // Permettre l'envoi de cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes HTTP autorisées
     allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
