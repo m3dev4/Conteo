@@ -47,14 +47,14 @@ const StoryCard = ({
     }
   };
 
-  const handleAddToReaderLater = async () => {
-    try {
-      addToReaderLater(story as Story)
-    } catch (error) {
-      toast.error('failed')
-    }
+  // const handleAddToReaderLater = async () => {
+  //   try {
+  //     addToReaderLater(story as Story)
+  //   } catch (error) {
+  //     toast.error('failed')
+  //   }
 
-  }
+  // }
 
 
 
@@ -113,7 +113,7 @@ const StoryCard = ({
               {showAddReader && ( // Afficher le bouton "Ajouter à lire plus tard" seulement si nécessaire
                 <Button
                   variant="outline"
-                  onClick={handleAddToReaderLater}
+                  // onClick={handleAddToReaderLater}
                  
                 >
                   +
