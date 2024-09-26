@@ -27,15 +27,16 @@ app.use(
   cors({
     origin: [
       'https://conteo.vercel.app', 
-      'https://conteo-qea1d1loe-devlo4s-projects.vercel.app', // Ajoute ici l'URL actuelle de ton frontend
-      'http://localhost:3000/'
+      'https://conteo-qea1d1loe-devlo4s-projects.vercel.app', 
+      'http://localhost:3000' // Supprime le '/' à la fin
     ],
     credentials: true, // Permet l'envoi de cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes HTTP autorisées
     allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
     exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
   })
-)
+);
+
 
 // Routes
 app.use('/api/users', userRoutes);
