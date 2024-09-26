@@ -15,7 +15,7 @@ export interface Story {
   description: string;
   author: Author; // Doit être de type Author
   coverImage: string;
-  category: string | Category
+  category: Category
   status: string;
   createdAt: string;
 }
