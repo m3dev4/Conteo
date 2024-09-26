@@ -28,6 +28,7 @@ app.use(
     origin: [
       'https://conteo.vercel.app', 
       'https://conteo-qea1d1loe-devlo4s-projects.vercel.app', // Ajoute ici l'URL actuelle de ton frontend
+      'http://localhost:3000/'
     ],
     credentials: true, // Permet l'envoi de cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes HTTP autorisées
