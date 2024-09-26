@@ -6,6 +6,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import StoryCard from "@/components/StoryCard";
 import { motion } from "framer-motion";
 import { useMediaQuery } from 'react-responsive';
+import { cn } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 15; 
 

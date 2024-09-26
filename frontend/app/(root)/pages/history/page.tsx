@@ -21,7 +21,6 @@ const History = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ModeToggle />
       <h1 className="text-2xl md:text-4xl font-bold mb-8 text-center">
         Parcourir les catégories
       </h1>

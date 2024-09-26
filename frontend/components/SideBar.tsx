@@ -42,8 +42,6 @@ const navItems: NavItems[] = [
     icon: <Book />,
     href: "/pages/library",
   },
- 
-  
 ];
 
 const SideBar = () => {
@@ -158,7 +156,10 @@ const SideBar = () => {
               )}
             </div>
           ) : (
-            <Link href="/auth/login" className="flex items-center text-gray-200 hover:text-gray-400">
+            <Link
+              href="/auth/login"
+              className="flex items-center text-gray-200 hover:text-gray-400"
+            >
               <LogInIcon size={20} />
               <span className="ml-2">Login</span>
             </Link>
@@ -179,7 +180,10 @@ const SideBar = () => {
           </Link>
         ))}
         {user?.isAdmin && (
-          <Link href="/pages/admin" className="flex flex-col items-center text-gray-400">
+          <Link
+            href="/pages/admin"
+            className="flex flex-col items-center text-gray-400"
+          >
             <LayoutDashboardIcon size={20} />
             <span className="text-xs">Dashboard</span>
           </Link>
@@ -187,22 +191,40 @@ const SideBar = () => {
 
         {/* Icône utilisateur pour mobile */}
         <div className="relative flex flex-col justify-center items-center text-gray-400">
-          <button onClick={toggleDropdown} className="flex flex-col items-center">
-            <UserIcon />
-            <span className="text-xs">Profile</span>
-          </button>
-          {isDropdownOpen && (
-            <div className="absolute -mt-24 flex justify-center items-center flex-col  bg-gray-700 text-white rounded shadow-lg w-28">
-              <Link href="/pages/profile" className="block p-2 hover:bg-gray-600">
-                Profile
-              </Link>
+          {user ? (
+            <>
               <button
-                onClick={handleLogout}
-                className="block w-full p-2 text-red-400 hover:text-red-600 hover:bg-gray-600"
+                onClick={toggleDropdown}
+                className="flex flex-col items-center"
               >
-                Logout
+                <UserIcon />
+                <span className="text-xs">Profile</span>
               </button>
-            </div>
+              {isDropdownOpen && (
+                <div className="absolute -mt-24 flex justify-center items-center flex-col  bg-gray-700 text-white rounded shadow-lg w-28">
+                  <Link
+                    href="/pages/profile"
+                    className="block p-2 hover:bg-gray-600"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full p-2 text-red-400 hover:text-red-600 hover:bg-gray-600"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="flex flex-col items-center text-gray-400"
+            >
+              <LogInIcon size={20} />
+              <span className="text-xs">Login</span>
+            </Link>
           )}
         </div>
       </div>

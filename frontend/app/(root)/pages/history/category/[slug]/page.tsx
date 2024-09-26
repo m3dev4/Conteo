@@ -1,7 +1,7 @@
 "use client";
 import { useStoryStore } from "@/app/api/store/storyStore";
 import { Category, Story } from "@/types";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -17,11 +17,24 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import { Toaster } from "react-hot-toast";
+import { useAuthStore } from "@/app/api/store/authStore";
 
 const CategoryStory = () => {
   const { slug } = useParams();
   const { stories, loading, error, fetchStoriesByCategory, addToReaderLater } = useStoryStore();
   const [selectStorie, setSelectedStory] = useState<Story | null>(null);
+  const { user } = useAuthStore()
+
+  const router = useRouter();
+
+  const handleReadNow = (e: React.MouseEvent) => {
+    e.preventDefault(); // Empêche la navigation par défaut du lien
+    if (user) {
+      router.push(`/pages/history/${selectStorie._id}`);
+    } else {
+      router.push("/auth/login");
+    }
+  };
 
   useEffect(() => {
     if (slug) {
@@ -31,6 +44,7 @@ const CategoryStory = () => {
       console.log(stories);
     }
   }, [fetchStoriesByCategory, slug]);
+
 
   const handleAddToReaderLater = (story: Story) => {
     const storyWithCategoryString = { ...story, category: story.category.toString() }
@@ -105,10 +119,8 @@ const CategoryStory = () => {
                 </span>
               </div>
               <div className="flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 sm:space-x-4">
-                <Button className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-400 text-white">
-                  <Link href={`/pages/history/${selectStorie._id}`}>
+                <Button className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-400 text-white" onClick={handleReadNow}>
                     Lire maintenant
-                  </Link>
                 </Button>
                 <Button
                   variant="outline"

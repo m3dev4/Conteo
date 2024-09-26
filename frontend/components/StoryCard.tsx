@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,32 +13,55 @@ import {
 } from "@/components/ui/dialog";
 import { getImageUrl } from "@/utils/imageUrl";
 import Link from "next/link";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { Category, Story } from "@/types";
 import { useStoryStore } from "@/app/api/store/storyStore";
+import { useAuthStore } from "@/app/api/store/authStore";
+import { useRouter } from "next/navigation";
 
 interface StoryCardProps {
   story: Story;
-  children?: React.ReactNode
+  children?: React.ReactNode;
   showAddReader?: boolean; // Ajoutez cette prop pour contrôler si on affiche le bouton "addReader"
 }
 
-interface StoryWithCategory extends Story {
-  category: Category
-}
 
-const StoryCard = ({ story, children, showAddReader = true }: StoryCardProps) => {
+
+const StoryCard = ({
+  story,
+  children,
+  showAddReader = true,
+}: StoryCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { addToReaderLater} = useStoryStore()
+  const { addToReaderLater } = useStoryStore();
+  const { user } = useAuthStore();
 
-  // const handleAddToReaderLater = (story: Story) => {
-  //   addToReaderLater(story as StoryWithCategory);
-  // };
+  const router = useRouter();
+
+  const handleReadNow = (e: React.MouseEvent) => {
+    e.preventDefault(); // Empêche la navigation par défaut du lien
+    if (user) {
+      router.push(`/pages/history/${story._id}`);
+    } else {
+      router.push("/auth/login");
+    }
+  };
+
+  const handleAddToReaderLater = async () => {
+    try {
+      addToReaderLater(story as Story)
+    } catch (error) {
+      toast.error('failed')
+    }
+
+  }
+
+
 
   return (
     <>
       <Card
-        className="w-64 h-96 m-2 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer"
+        className="w-64 h-96  m-2 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer"
         onClick={() => setIsOpen(true)}
       >
         <Image
@@ -79,20 +102,19 @@ const StoryCard = ({ story, children, showAddReader = true }: StoryCardProps) =>
                   <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                     {story.status}
                   </span>
-                  {/* <span className="text-xs text-muted-foreground">
-                    {story.parts} parts
-                  </span> */}
                 </div>
                 <p className="text-sm line-clamp-4">{story.description}</p>
               </div>
             </div>
             <div className="flex space-x-2">
-              <Button className="flex-1">
-                <Link href={`/pages/history/${story._id}`}>Lire maintenant</Link>
+              <Button className="flex-1" onClick={handleReadNow}>
+                Lire maintenant
               </Button>
               {showAddReader && ( // Afficher le bouton "Ajouter à lire plus tard" seulement si nécessaire
-                <Button variant="outline" 
-                // onClick={() => handleAddToReaderLater(story)}
+                <Button
+                  variant="outline"
+                  onClick={handleAddToReaderLater}
+                 
                 >
                   +
                 </Button>
