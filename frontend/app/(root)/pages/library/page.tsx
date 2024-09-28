@@ -20,7 +20,7 @@ const Library = () => {
     }
 
     return storyList.map((story) => (
-      <StoryCard key={story._id} story={story} showAddReader={false}>
+      <StoryCard key={story._id} story={story} showAddReader={false} >
         {story.progress !== undefined && story.progress < 100 && (
           <Progress value={story.progress} className="w-full mt-2" />
         )}

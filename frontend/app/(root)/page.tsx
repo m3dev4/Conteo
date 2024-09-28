@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 "use client"
 import React, { useEffect, useState, useCallback } from "react";
 import { useStoryStore } from "@/app/api/store/storyStore";
@@ -80,7 +81,7 @@ export default function Home() {
       >
         {stories.map((story) => (
           <SwiperSlide key={story._id}>
-            <StoryCard story={story} />
+            <StoryCard story={story} children={undefined} />
           </SwiperSlide>
         ))}
       </Swiper>

@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { useMediaQuery } from 'react-responsive';
 import { useAuthStore } from "@/app/api/store/authStore";
 
-const StoryCard = ({ story, showAddReader = true }) => {
+const StoryCard = ({ story, children, showAddReader = true }) => {
   const {user} = useAuthStore()
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
