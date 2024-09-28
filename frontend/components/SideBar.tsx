@@ -76,7 +76,7 @@ const SideBar = () => {
       {/* Sidebar pour les écrans larges */}
       <div
         className={cn(
-          `hidden sm:block h-screen bg-gray-800 transition-all duration-300 z-10 ${
+          `hidden sm:block h-screen bg-gray-800 transition-all duration-300 z-50 ${
             isOpen ? "w-64" : "w-16"
           } fixed`
         )}

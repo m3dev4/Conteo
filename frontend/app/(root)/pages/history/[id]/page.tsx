@@ -55,6 +55,9 @@ const Reader = ({ params }: { params: { id: string } }) => {
       try {
         setFetchError(null);
         const fetchedStory = await getStoryById(params.id);
+        if (!fetchedStory) {
+          throw new Error("Story not found");
+        }
         const story: Story = {
           _id: fetchedStory._id,
           title: fetchedStory.title,
@@ -69,9 +72,6 @@ const Reader = ({ params }: { params: { id: string } }) => {
           status: fetchedStory.status,
           createdAt: fetchedStory.createdAt,
         };
-        if (!fetchedStory) {
-          throw new Error("Story not found");
-        }
         setStory(story);
         await getChapterByStoryId(fetchedStory._id);
       } catch (err) {
@@ -93,6 +93,9 @@ const Reader = ({ params }: { params: { id: string } }) => {
         newPages.push(words.slice(i, i + WORDS_PER_PAGE).join(" "));
       }
       setPages(newPages);
+      setCurrentPage(0);
+    } else {
+      setPages([]);
       setCurrentPage(0);
     }
   }, [currentChapter]);
@@ -222,21 +225,25 @@ const Reader = ({ params }: { params: { id: string } }) => {
                   <SheetTitle>Chapitres</SheetTitle>
                 </SheetHeader>
                 <div className="mt-4 space-y-2">
-                  {sortedChapters.map((chapter, index) => (
-                    <Button
-                      key={chapter._id}
-                      variant={currentChapterIndex === index ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setCurrentChapterIndex(index);
-                        setCurrentPage(0);
-                        setIsSettingsOpen(false);
-                      }}
-                    >
-                      <Bookmark className="h-4 w-4 mr-2" />
-                      Chapitre {chapter.chapterNumber}: {chapter.title}
-                    </Button>
-                  ))}
+                  {sortedChapters.length > 0 ? (
+                    sortedChapters.map((chapter, index) => (
+                      <Button
+                        key={chapter._id}
+                        variant={currentChapterIndex === index ? "default" : "ghost"}
+                        className="w-full justify-start"
+                        onClick={() => {
+                          setCurrentChapterIndex(index);
+                          setCurrentPage(0);
+                          setIsSettingsOpen(false);
+                        }}
+                      >
+                        <Bookmark className="h-4 w-4 mr-2" />
+                        Chapitre {chapter.chapterNumber}: {chapter.title}
+                      </Button>
+                    ))
+                  ) : (
+                    <p>Aucun chapitre disponible</p>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
@@ -252,48 +259,58 @@ const Reader = ({ params }: { params: { id: string } }) => {
           }`}
         >
           <div className="px-6 py-8">
-            <h2 className={`text-2xl font-semibold mb-6 text-center ${theme === "light" ? "text-gray-800" : "text-amber-50"}`}>
-              Chapitre {currentChapter.chapterNumber}: {currentChapter.title}
-            </h2>
-            <div
-              ref={contentRef}
-              className="prose max-w-none"
-              style={{
-                fontSize: `${fontSize}px`,
-                fontFamily,
-                lineHeight,
-                color: theme === "light" ? "#1a202c" : "#e2e8f0",
-                transition: "all 0.3s ease",
-              }}
-            >
-              {pages[currentPage]}
-            </div>
+            {currentChapter ? (
+              <>
+                <h2 className={`text-2xl font-semibold mb-6 text-center ${theme === "light" ? "text-gray-800" : "text-amber-50"}`}>
+                  Chapitre {currentChapter.chapterNumber}: {currentChapter.title}
+                </h2>
+                <div
+                  ref={contentRef}
+                  className="prose max-w-none"
+                  style={{
+                    fontSize: `${fontSize}px`,
+                    fontFamily,
+                    lineHeight,
+                    color: theme === "light" ? "#1a202c" : "#e2e8f0",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  {pages[currentPage]}
+                </div>
+              </>
+            ) : (
+              <p className={`text-center ${theme === "light" ? "text-gray-800" : "text-amber-50"}`}>
+                Aucun chapitre disponible pour l'instant.
+              </p>
+            )}
           </div>
         </div>
       </main>
 
       {/* Contrôles de navigation persistants */}
-      <div className="fixed bottom-0 left-0 right-0 bg-opacity-90 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <Button
-            onClick={goToPreviousPage}
-            disabled={currentChapterIndex === 0 && currentPage === 0}
-            className="rounded-full bg-gray-200 dark:bg-gray-700"
-          >
-            <ChevronLeft className="mr-2" /> Précédent
-          </Button>
-          <span className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-300"}`}>
-            Page {currentPage + 1} / {pages.length}
-          </span>
-          <Button
-            onClick={goToNextPage}
-            disabled={currentChapterIndex === sortedChapters.length - 1 && currentPage === pages.length - 1}
-            className="rounded-full bg-gray-200 dark:bg-gray-700"
-          >
-            Suivant <ChevronRight className="ml-2" />
-          </Button>
+      {currentChapter && (
+        <div className="fixed bottom-0 left-0 right-0 bg-opacity-90 backdrop-blur-sm z-[100]  max-sm:realtive max-sm:bottom-[60px] ">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center   ">
+            <Button
+              onClick={goToPreviousPage}
+              disabled={currentChapterIndex === 0 && currentPage === 0}
+              className="rounded-full bg-gray-200 dark:bg-gray-700"
+            >
+              <ChevronLeft className="mr-2" /> Précédent
+            </Button>
+            <span className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-300"}`}>
+              Page {currentPage + 1} / {pages.length}
+            </span>
+            <Button
+              onClick={goToNextPage}
+              disabled={currentChapterIndex === sortedChapters.length - 1 && currentPage === pages.length - 1}
+              className="rounded-full bg-gray-200 dark:bg-gray-700"
+            >
+              Suivant <ChevronRight className="ml-2" />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
-"use client";
-import React, { useEffect, useState } from "react";
+"use client"
+import React, { useState } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,34 +12,18 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { getImageUrl } from "@/utils/imageUrl";
-import Link from "next/link";
-import toast, { Toaster } from "react-hot-toast";
-import { Category, Story } from "@/types";
-import { useStoryStore } from "@/app/api/store/storyStore";
-import { useAuthStore } from "@/app/api/store/authStore";
 import { useRouter } from "next/navigation";
+import { useMediaQuery } from 'react-responsive';
+import { useAuthStore } from "@/app/api/store/authStore";
 
-interface StoryCardProps {
-  story: Story;
-  children?: React.ReactNode;
-  showAddReader?: boolean; // Ajoutez cette prop pour contrôler si on affiche le bouton "addReader"
-}
-
-
-
-const StoryCard = ({
-  story,
-  children,
-  showAddReader = true,
-}: StoryCardProps) => {
+const StoryCard = ({ story, showAddReader = true }) => {
+  const {user} = useAuthStore()
   const [isOpen, setIsOpen] = useState(false);
-  const { addToReaderLater } = useStoryStore();
-  const { user } = useAuthStore();
-
   const router = useRouter();
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
-  const handleReadNow = (e: React.MouseEvent) => {
-    e.preventDefault(); // Empêche la navigation par défaut du lien
+  const handleReadNow = (e) => {
+    e.preventDefault();
     if (user) {
       router.push(`/pages/history/${story._id}`);
     } else {
@@ -47,32 +31,21 @@ const StoryCard = ({
     }
   };
 
-  // const handleAddToReaderLater = async () => {
-  //   try {
-  //     addToReaderLater(story as Story)
-  //   } catch (error) {
-  //     toast.error('failed')
-  //   }
-
-  // }
-
-
-
   return (
     <>
       <Card
-        className="w-64 h-96  m-2 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer"
+        className={`${isMobile ? 'w-48 h-72' : 'w-64 h-96'} m-2 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer`}
         onClick={() => setIsOpen(true)}
       >
         <Image
           src={getImageUrl(story.coverImage)}
           alt={story.title}
-          width={256}
-          height={256}
+          width={isMobile ? 192 : 256}
+          height={isMobile ? 192 : 256}
           objectFit="cover"
         />
         <CardContent className="p-4 h-1/3 flex flex-col justify-end">
-          <h3 className="text-lg font-semibold mb-2 line-clamp-2">
+          <h3 className={`${isMobile ? 'text-sm' : 'text-lg'} font-semibold mb-2 line-clamp-2`}>
             {story.title}
           </h3>
         </CardContent>
@@ -91,8 +64,8 @@ const StoryCard = ({
               <Image
                 src={getImageUrl(story.coverImage)}
                 alt={story.title}
-                width={150}
-                height={225}
+                width={isMobile ? 100 : 150}
+                height={isMobile ? 150 : 225}
                 objectFit="cover"
                 className="rounded-md"
               />
@@ -103,19 +76,15 @@ const StoryCard = ({
                     {story.status}
                   </span>
                 </div>
-                <p className="text-sm line-clamp-4">{story.description}</p>
+                <p className={`${isMobile ? 'text-xs' : 'text-sm'} line-clamp-4`}>{story.description}</p>
               </div>
             </div>
             <div className="flex space-x-2">
               <Button className="flex-1" onClick={handleReadNow}>
                 Lire maintenant
               </Button>
-              {showAddReader && ( // Afficher le bouton "Ajouter à lire plus tard" seulement si nécessaire
-                <Button
-                  variant="outline"
-                  // onClick={handleAddToReaderLater}
-                 
-                >
+              {showAddReader && (
+                <Button variant="outline">
                   +
                 </Button>
               )}
@@ -123,7 +92,6 @@ const StoryCard = ({
           </div>
         </DialogContent>
       </Dialog>
-      <Toaster />
     </>
   );
 };
